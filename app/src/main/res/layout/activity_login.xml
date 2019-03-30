@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/enterPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:layout_centerInParent="true"
+        android:background="@drawable/box"
+        android:padding="5dp"/>
+
+    <EditText
+        android:id="@+id/enterEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:layout_above="@id/enterPassword"
+        android:background="@drawable/box"
+        android:padding="5dp"/>
+
+    <CheckBox
+        android:id="@+id/remBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/enterPassword"
+        android:layout_below="@id/enterPassword"
+        android:buttonTint="@color/colorPrimary"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remember Me"
+        android:textSize="14sp"
+        android:layout_alignBaseline="@id/remBox"
+        android:layout_toEndOf="@id/remBox"/>
+
+    <Button
+        android:id="@+id/loginBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/remBox"
+        android:background="@color/colorPrimary"
+        android:textColor="#fff"
+        android:layout_margin="5dp" />
+
+    <Button
+        android:id="@+id/regBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/loginBtn"
+        android:background="@color/colorPrimary"
+        android:textColor="#fff"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/american_flag_icon"
+        android:layout_above="@id/enterEmail"/>
+
+    <TextView
+        android:id="@+id/privacyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/privacy_link"
+        android:textSize="16sp"
+        android:textColor="@color/colorPrimary"/>
+</RelativeLayout>

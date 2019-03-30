@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hammollc.hammonasset.CrewHistory">
+
+    <ProgressBar
+        android:id="@+id/crewHistoryProgress"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+    <ListView
+        android:id="@+id/crewList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:id="@+id/crewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="10dp"
+            android:textSize="30sp"
+            android:textColor="#000"/>
+
+        <Button
+            android:id="@+id/dailyReportBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/dateText"
+            android:layout_marginStart="125dp"
+            android:layout_marginTop="30dp"
+            android:text="Daily Report"
+            android:textColor="#fff"
+            android:background="@color/colorPrimary" />
+
+        <Button
+            android:id="@+id/payItemsBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/dateText"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="125dp"
+            android:text="Pay Items"
+            android:textColor="#fff"
+            android:background="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/crewText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dailyReportBtn"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="20dp"
+            android:text="Crew:"
+            android:textSize="24sp"
+            android:textColor="#000"/>
+
+        <ListView
+            android:id="@+id/crewmanList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/crewText"
+            android:layout_margin="20dp"
+            android:background="@drawable/box"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/singleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/crewMemberPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="15dp"
+            android:textSize="24sp"
+            android:textColor="#007bff"/>
+
+        <TextView
+            android:id="@+id/crewMemberEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/crewMemberPhone"
+            android:layout_margin="15dp"
+            android:textSize="24sp"
+            android:textColor="#007bff"/>
+
+        <TextView
+            android:id="@+id/crewMemberHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/crewMemberEmail"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginStart="15dp"
+            android:text="Hours:"
+            android:textSize="30sp"
+            android:textColor="#000"/>
+
+
+        <Button
+            android:id="@+id/rejectButton"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/crewMemberHours"
+            android:layout_marginStart="125dp"
+            android:layout_marginTop="15dp"
+            android:text="Reject Hours"
+            android:textColor="#fff"
+            android:backgroundTint="#FF0000" />
+
+        <Button
+            android:id="@+id/approveButton"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/crewMemberHours"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="125dp"
+            android:text="Approve Hours"
+            android:textColor="#fff"
+            android:backgroundTint="#008000" />
+
+        <TextView
+            android:id="@+id/crewMemberStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/rejectButton"
+            android:layout_margin="15dp"
+            android:textSize="24sp"
+            android:textColor="#000"/>
+
+        <TextView
+            android:id="@+id/crewMemberEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/crewMemberStart"
+            android:layout_margin="15dp"
+            android:textSize="24sp"
+            android:textColor="#000"/>
+
+        <TextView
+            android:id="@+id/crewMemberTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/crewMemberEnd"
+            android:layout_margin="15dp"
+            android:textSize="24sp"
+            android:textColor="#000"/>
+
+        <ListView
+            android:id="@+id/crewMemberBlocks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/crewMemberTotal"
+            android:layout_margin="15dp"
+            android:background="@drawable/box"/>
+
+        <TextView
+            android:id="@+id/unreportedText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Hours Not Reported"
+            android:textSize="40sp"
+            android:textColor="#000"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+</RelativeLayout>

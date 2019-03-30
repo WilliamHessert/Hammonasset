@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hammollc.hammonasset.ReportHours">
+
+    <RelativeLayout
+        android:id="@+id/dateTimeView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/dayBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_margin="20dp"
+            android:background="@drawable/box"
+            android:text="Day"
+            android:textColor="@color/colorPrimary"/>
+
+        <Button
+            android:id="@+id/nigBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="20dp"
+            android:background="@drawable/box"
+            android:text="Night"
+            android:textColor="@color/colorPrimary"/>
+
+        <EditText
+            android:id="@+id/reportDateField"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/dayBtn"
+            android:background="@drawable/box"
+            android:textSize="18sp"
+            android:padding="5dp" />
+
+        <EditText
+            android:id="@+id/reportStartField"
+            android:layout_width="100dp"
+            android:layout_height="35dp"
+            android:layout_margin="20dp"
+            android:layout_below="@id/reportDateField"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/box"
+            android:textSize="18sp"
+            android:padding="5dp" />
+
+        <EditText
+            android:id="@+id/reportEndField"
+            android:layout_width="100dp"
+            android:layout_height="35dp"
+            android:layout_margin="20dp"
+            android:layout_below="@id/reportDateField"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/box"
+            android:textSize="18sp"
+            android:padding="5dp"/>
+
+        <Button
+            android:id="@+id/confirmDateTime"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/reportEndField"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/box_filled"
+            android:text="Confirm Date and Time"
+            android:textColor="#fff"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/hourBlockView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/reportProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="250dp"
+            android:layout_height="110dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:progressTint="@color/colorPrimary"
+            android:max="100"
+            android:progress="0"
+            android:secondaryProgress="100"
+            android:progressDrawable="@drawable/progress_circle"
+            android:indeterminate="false"/>
+
+        <TextView
+            android:id="@+id/reportProgressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:text="90%"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/hoursLeftText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/reportProgress"
+            android:layout_margin="10dp"
+            android:text="Need to Assign 8.00 Hours"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"/>
+
+        <Button
+            android:id="@+id/addHourBlock"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/hoursLeftText"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/box_filled"
+            android:text="Add Block"
+            android:textColor="#fff" />
+
+        <Button
+            android:id="@+id/confirmHours"
+            android:layout_width="225dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/box_filled"
+            android:text="Confirm and Report Hours"
+            android:textColor="#fff" />
+
+        <ListView
+            android:id="@+id/blockList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_below="@id/addHourBlock"
+            android:layout_above="@id/confirmHours">
+        </ListView>
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/hourProgress"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+</RelativeLayout>

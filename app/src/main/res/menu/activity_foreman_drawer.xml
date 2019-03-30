@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="Home" />
+        <item android:title="Personal">
+            <menu>
+                <item
+                    android:id="@+id/nav_info"
+                    android:icon="@drawable/info_icon"
+                    android:title="Info" />
+                <item
+                    android:id="@+id/nav_pHours"
+                    android:icon="@drawable/hours_icon"
+                    android:title="Your Hours" />
+            </menu>
+        </item>
+
+        <item android:title="Group">
+            <menu>
+                <item
+                    android:id="@+id/nav_crew"
+                    android:icon="@drawable/crew"
+                    android:title="Create New Work Order" />
+                <item
+                    android:id="@+id/nav_orders"
+                    android:icon="@drawable/approve"
+                    android:title="My Work Orders" />
+            </menu>
+        </item>
+    </group>
+</menu>

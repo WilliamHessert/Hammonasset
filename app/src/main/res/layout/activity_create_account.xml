@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hammollc.hammonasset.CreateAccount">
+
+    <EditText
+        android:id="@+id/ePassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="20dp"
+        android:inputType="textPassword"
+        android:hint="Password"/>
+
+    <EditText
+        android:id="@+id/eEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="20dp"
+        android:layout_above="@id/ePassword"
+        android:inputType="textEmailAddress"
+        android:hint="Email"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Account"
+        android:layout_centerHorizontal="true"
+        android:textSize="25sp"
+        android:layout_above="@id/eEmail"/>
+
+    <EditText
+        android:id="@+id/cPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="20dp"
+        android:inputType="textPassword"
+        android:layout_below="@id/ePassword"
+        android:hint="Confirm Password"/>
+
+    <Button
+        android:id="@+id/acctBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/cPassword"
+        android:text="Create Account"/>
+
+    <ProgressBar
+        android:id="@+id/createProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+</RelativeLayout>

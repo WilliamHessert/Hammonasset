@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "794508230253",
+    "firebase_url": "https://hammonasset-37234.firebaseio.com",
+    "project_id": "hammonasset-37234",
+    "storage_bucket": "hammonasset-37234.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794508230253:android:0b4f78b8497c461d",
+        "android_client_info": {
+          "package_name": "com.hammollc.hammonasset"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "794508230253-cdn3e1s86gsc2duik1lsfab4ke7tnkre.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc1GEO9H_lUhfCC5FW8nBuHPlRLfoXiWs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/addDialogText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:text="Add Accomplishment"
+        android:textSize="18sp"
+        android:textColor="#000"/>
+
+    <EditText
+        android:id="@+id/eAccomplishment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/addDialogText"
+        android:layout_margin="10dp"
+        android:hint="Accomplishment"
+        android:lines="4"
+        android:inputType="textCapSentences|textMultiLine"
+        android:background="@drawable/box"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"/>
+
+    <Button
+        android:id="@+id/addAccDialogBtn"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/eAccomplishment"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="10dp"
+        android:text="Add"
+        android:textColor="#fff"
+        android:background="@color/colorPrimary"/>
+
+    <Button
+        android:id="@+id/cancelAccDialogBtn"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/eAccomplishment"
+        android:layout_toStartOf="@id/addAccDialogBtn"
+        android:layout_margin="10dp"
+        android:text="Cancel"
+        android:textColor="#fff"
+        android:background="@color/colorPrimary"/>
+
+</RelativeLayout>

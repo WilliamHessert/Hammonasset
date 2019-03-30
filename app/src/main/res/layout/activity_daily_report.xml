@@ -1,0 +1,1036 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/initialInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/repDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_alignParentTop="true"
+            android:hint="Date"
+            android:focusable="false"/>
+
+        <EditText
+            android:id="@+id/repTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/repDate"
+            android:hint="Time"
+            android:focusable="false"/>
+
+        <EditText
+            android:id="@+id/poNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/repTime"
+            android:hint="P.O. Number"
+            android:focusable="false"/>
+
+        <EditText
+            android:id="@+id/eInspector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/poNum"
+            android:hint="Inspector"
+            android:inputType="text"/>
+
+        <EditText
+            android:id="@+id/eBridge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/eInspector"
+            android:hint="Bridge Number"
+            android:inputType="text"/>
+
+        <EditText
+            android:id="@+id/eLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/eBridge"
+            android:hint="Location"
+            android:inputType="text"/>
+
+        <EditText
+            android:id="@+id/eCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/eLocation"
+            android:hint="Town/City"
+            android:focusable="false"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/payItemHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/payItemText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Pay Items"
+            android:textColor="#000"/>
+
+        <ListView
+            android:id="@+id/payItemList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_below="@id/payItemText"
+            android:background="@drawable/box"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/accHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/accText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Accomplishments"
+            android:textColor="#000"/>
+
+        <Button
+            android:id="@+id/accBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/accText"
+            android:layout_margin="10dp"
+            android:background="@color/colorPrimary"
+            android:text="+ Add"
+            android:textColor="#fff"/>
+
+        <ListView
+            android:id="@+id/accList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_below="@+id/accBtn"
+            android:background="@drawable/box"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/safetyHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/safetyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Safety Compliance Check"
+            android:textColor="#000"/>
+
+        <Button
+            android:id="@+id/safetyYesBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/safetyText"
+            android:layout_alignParentStart="true"
+            android:layout_margin="10dp"
+            android:text="Yes"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/box"/>
+
+        <Button
+            android:id="@+id/safetyNoBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/safetyText"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
+            android:text="No"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/box"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/eSafetyNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/safetyYesBtn"
+            android:layout_margin="10dp"
+            android:hint="Safety Compliance Notes (Optional)"
+            android:lines="4"
+            android:inputType="textCapSentences|textMultiLine"
+            android:gravity="top|left"
+            android:background="@drawable/box"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:visibility="visible"/>
+
+        <EditText
+            android:id="@+id/eMiscNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Visitors/Misc Notes"
+            android:lines="4"
+            android:inputType="textCapSentences|textMultiLine"
+            android:background="@drawable/box"
+            android:gravity="top|left"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:layout_below="@id/eSafetyNotes"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/sigHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/sigText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Signature"
+            android:textColor="#000"/>
+
+        <Button
+            android:id="@+id/sigYesBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/sigText"
+            android:layout_alignParentStart="true"
+            android:layout_margin="10dp"
+            android:text="Yes"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/box"/>
+
+        <Button
+            android:id="@+id/sigNoBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/sigText"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
+            android:text="No"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/box"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/sigReviewHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+
+        <TextView
+            android:id="@+id/reviewText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="Review"
+            android:textSize="30sp"
+            android:textColor="#000"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:background="@drawable/box"
+            android:layout_below="@id/reviewText">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/reviewInitText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_margin="10dp"
+                    android:text="Initial Info"
+                    android:textSize="24sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:id="@+id/reviewPoNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/reviewInitText"
+                    android:layout_margin="10dp"
+                    android:text="P.O. Number: "
+                    android:textSize="18sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:id="@+id/reviewInsp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/reviewPoNum"
+                    android:layout_margin="10dp"
+                    android:layout_marginStart="20dp"
+                    android:text="Inspector: "
+                    android:textSize="18sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:id="@+id/reviewBrid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/reviewInsp"
+                    android:layout_margin="10dp"
+                    android:layout_marginStart="20dp"
+                    android:text="Bridge Number: "
+                    android:textSize="18sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:id="@+id/reviewLoca"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/reviewBrid"
+                    android:layout_margin="10dp"
+                    android:layout_marginStart="20dp"
+                    android:text="Location: "
+                    android:textSize="18sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:id="@+id/reviewTown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/reviewLoca"
+                    android:layout_margin="10dp"
+                    android:layout_marginStart="20dp"
+                    android:text="Town: "
+                    android:textSize="18sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:id="@+id/reviewPayItemsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/reviewTown"
+                    android:layout_margin="10dp"
+                    android:text="Pay Items"
+                    android:textSize="24sp"
+                    android:textColor="#000"/>
+
+                <Button
+                    android:id="@+id/reviewPayItemsBtn"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@id/reviewPayItemsText"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="10dp"
+                    android:background="@color/colorPrimary"
+                    android:text="Review Pay Items"
+                    android:textColor="#fff"/>
+
+                <TextView
+                    android:id="@+id/reviewAccText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/reviewPayItemsBtn"
+                    android:layout_margin="10dp"
+                    android:text="Accomplishments"
+                    android:textSize="24sp"
+                    android:textColor="#000"/>
+
+                <Button
+                    android:id="@+id/reviewAccBtn"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@id/reviewAccText"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="10dp"
+                    android:background="@color/colorPrimary"
+                    android:text="Review Accomplishments"
+                    android:textColor="#fff"/>
+
+                <TextView
+                    android:id="@+id/reviewCompText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/reviewAccBtn"
+                    android:layout_margin="10dp"
+                    android:text="Safety Compliance"
+                    android:textSize="24sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:id="@+id/reviewCompBool"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/reviewCompText"
+                    android:layout_margin="10dp"
+                    android:text="Safety Compliance Check: "
+                    android:textSize="18sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:id="@+id/reviewCompNotes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/reviewCompBool"
+                    android:layout_margin="10dp"
+                    android:layout_marginStart="20dp"
+                    android:text="Notes: "
+                    android:textSize="18sp"
+                    android:textColor="#000"/>
+
+                <TextView
+                    android:id="@+id/reviewMiscNotes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/reviewCompNotes"
+                    android:layout_margin="10dp"
+                    android:layout_marginStart="20dp"
+                    android:text="Visitors/Misc Notes: "
+                    android:textSize="18sp"
+                    android:textColor="#000"/>
+
+                <RelativeLayout
+                    android:id="@+id/moreReviewHolder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/reviewMiscNotes"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/reviewPolText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_margin="10dp"
+                        android:text="Police"
+                        android:textSize="24sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewPolType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewPolText"
+                        android:layout_margin="10dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <Button
+                        android:id="@+id/reviewPolNamesBtn"
+                        android:layout_width="150dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/reviewPolType"
+                        android:layout_margin="10dp"
+                        android:text="Police Last Names"
+                        android:textColor="#fff"
+                        android:background="@color/colorPrimary"/>
+
+                    <TextView
+                        android:id="@+id/reviewPolArrTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewPolNamesBtn"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewPolEndTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewPolArrTime"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <Button
+                        android:id="@+id/reviewPolTownsBtn"
+                        android:layout_width="150dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/reviewPolEndTime"
+                        android:layout_margin="10dp"
+                        android:text="Police Towns"
+                        android:textColor="#fff"
+                        android:background="@color/colorPrimary"/>
+
+                    <TextView
+                        android:id="@+id/reviewFlagText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/reviewPolTownsBtn"
+                        android:layout_margin="10dp"
+                        android:text="Flaggers"
+                        android:textSize="24sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewFlagArrTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewFlagText"
+                        android:layout_margin="10dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewFlagEndTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewFlagArrTime"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewFlagNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewFlagEndTime"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewMiscText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/reviewFlagNum"
+                        android:layout_margin="10dp"
+                        android:text="Miscellaneous"
+                        android:textSize="24sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewTrafArrTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewMiscText"
+                        android:layout_margin="10dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewTrafEndTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewTrafArrTime"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewProdStaTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewTrafEndTime"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewProdEndTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewProdStaTime"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+
+                    <TextView
+                        android:id="@+id/reviewVehStorage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/reviewProdEndTime"
+                        android:layout_margin="10dp"
+                        android:layout_marginStart="20dp"
+                        android:textSize="18sp"
+                        android:textColor="#000"/>
+                </RelativeLayout>
+            </RelativeLayout>
+        </ScrollView>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/sigView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/sigViewText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Inspector Signature"
+            android:textColor="#000"/>
+
+        <LinearLayout
+            android:id="@+id/canvasLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/sigViewText"
+            android:layout_margin="10dp"
+            android:background="@drawable/box"
+            android:orientation="vertical" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/policeHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/policeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Police"
+            android:textColor="#000"/>
+
+        <Button
+            android:id="@+id/policeStateBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/policeText"
+            android:layout_alignParentStart="true"
+            android:layout_margin="10dp"
+            android:text="State"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/box"/>
+
+        <Button
+            android:id="@+id/policeLocalBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/policeText"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Local"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/box"/>
+
+        <Button
+            android:id="@+id/policeNoneBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/policeText"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
+            android:text="None"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/box"/>
+
+
+        <Button
+            android:id="@+id/policeNameBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/policeLocalBtn"
+            android:layout_margin="10dp"
+            android:background="@color/colorPrimary"
+            android:text="+ Name"
+            android:textColor="#fff" />
+
+        <EditText
+            android:id="@+id/policeEndTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerHorizontal="true"
+            android:hint="End Time (24-Hour Time)"
+            android:inputType="textNoSuggestions"/>
+
+        <EditText
+            android:id="@+id/policeStartTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/policeEndTime"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerHorizontal="true"
+            android:hint="Arrival Time (24-Hour Time)"
+            android:inputType="textNoSuggestions"/>
+
+        <ListView
+            android:id="@+id/policeNameList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/policeStartTime"
+            android:layout_below="@id/policeNameBtn"
+            android:layout_margin="10dp"
+            android:background="@drawable/box"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/townHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/townText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Police - Towns"
+            android:textColor="#000"/>
+
+        <Button
+            android:id="@+id/policeTownBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/townText"
+            android:layout_margin="10dp"
+            android:background="@color/colorPrimary"
+            android:text="+ Town"
+            android:textColor="#fff" />
+
+
+        <ListView
+            android:id="@+id/policeTownList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="@drawable/box"
+            android:layout_below="@id/policeTownBtn" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/flaggerHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/flaggerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Flaggers"
+            android:textColor="#000"/>
+
+        <CheckBox
+            android:id="@+id/noFlaggerCheck"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_below="@id/flaggerText"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@id/noFlaggerCheck"
+            android:layout_alignBaseline="@id/noFlaggerCheck"
+            android:text="No Flaggers"
+            android:textSize="18sp"
+            android:textColor="#000"/>
+
+        <EditText
+            android:id="@+id/flaggerStartTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/noFlaggerCheck"
+            android:layout_centerHorizontal="true"
+            android:hint="Arrival Time (24-Hour Time)"
+            android:inputType="textNoSuggestions"/>
+
+        <EditText
+            android:id="@+id/flaggerEndTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/flaggerStartTime"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerHorizontal="true"
+            android:hint="End Time (24-Hour Time)"
+            android:inputType="textNoSuggestions"/>
+
+        <EditText
+            android:id="@+id/flaggerNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/flaggerEndTime"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerHorizontal="true"
+            android:hint="Number"
+            android:inputType="number"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/miscHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/miscText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Miscellaneous"
+            android:textColor="#000"/>
+
+        <EditText
+            android:id="@+id/trafficStartTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/miscText"
+            android:layout_centerHorizontal="true"
+            android:hint="Traffic Start Time (24-Hour Time)"
+            android:inputType="textNoSuggestions" />
+
+        <EditText
+            android:id="@+id/trafficEndTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/trafficStartTime"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerHorizontal="true"
+            android:hint="Traffic End Time (24-Hour Time)"
+            android:inputType="textNoSuggestions"/>
+
+        <EditText
+            android:id="@+id/prodStartTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_below="@id/trafficEndTime"
+            android:layout_centerHorizontal="true"
+            android:hint="Production Start Time (24-Hour Time)"
+            android:inputType="textNoSuggestions"/>
+
+        <EditText
+            android:id="@+id/prodEndTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/prodStartTime"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerHorizontal="true"
+            android:hint="Production End Time (24-Hour Time)"
+            android:inputType="textNoSuggestions"/>
+
+        <EditText
+            android:id="@+id/vehicleStorage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/prodEndTime"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerHorizontal="true"
+            android:hint="Vehicle Storage"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/reviewHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/imageHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/contBtn"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/imageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textSize="24sp"
+            android:text="Image"
+            android:textColor="#000"/>
+
+        <Button
+            android:id="@+id/imageBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/imageText"
+            android:layout_margin="10dp"
+            android:background="@color/colorPrimary"
+            android:text="+ Add"
+            android:textColor="#fff"/>
+
+        <ListView
+            android:id="@+id/imageList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_below="@+id/imageBtn"
+            android:background="@drawable/box"/>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp"
+        android:background="@color/colorPrimary"
+        android:text="Save &amp; Exit"
+        android:textColor="#fff"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/contBtn"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="10dp"
+        android:background="@color/colorPrimary"
+        android:text="Continue >"
+        android:textColor="#fff"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/reportProgress"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>

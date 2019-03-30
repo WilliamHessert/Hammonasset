@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hammollc.hammonasset.HoursHistoryActivity">
+
+    <ListView
+        android:id="@+id/historyList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/historyProgress"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:id="@+id/historyDetailHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/historyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textColor="#000"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"/>
+
+        <CheckBox
+            android:id="@+id/isReported"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_below="@id/historyTitle"
+            android:layout_margin="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:text="Reported Hours"
+            android:layout_toEndOf="@id/isReported"
+            android:layout_alignBaseline="@id/isReported"/>
+
+        <CheckBox
+            android:id="@+id/isApproved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_below="@id/isReported"
+            android:layout_margin="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:text="Hours Approved"
+            android:layout_toEndOf="@id/isApproved"
+            android:layout_alignBaseline="@id/isApproved"/>
+
+        <TextView
+            android:id="@+id/historyForeman"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:layout_below="@id/isApproved"
+            android:layout_margin="10dp"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:id="@+id/historyStartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:layout_below="@id/historyForeman"
+            android:layout_margin="10dp"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:id="@+id/historyEndTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:layout_below="@id/historyStartTime"
+            android:layout_margin="10dp"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:id="@+id/historyHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:layout_below="@id/historyEndTime"
+            android:layout_margin="10dp"
+            android:layout_alignParentStart="true"/>
+
+        <ListView
+            android:id="@+id/historyBlocks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/historyHours"
+            android:layout_margin="10dp"
+            android:background="@drawable/box"/>
+    </RelativeLayout>
+
+</RelativeLayout>

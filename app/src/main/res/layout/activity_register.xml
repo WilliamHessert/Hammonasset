@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ssnCont"
+        android:layout_centerInParent="true">
+
+        <EditText
+            android:id="@+id/eSsn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="40dp"
+            android:hint="Last 4 Digits"
+            android:inputType="numberPassword"
+            android:maxLength="4"
+            android:layout_below="@id/lastFour"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/lastFour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please enter the last 4 digits \nof your Social Security number"
+            android:textSize="20sp"
+            android:layout_centerHorizontal="true"/>
+
+        <Button
+            android:id="@+id/findEmp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Enter"
+            android:textColor="#fff"
+            android:background="@color/colorPrimary"
+            android:layout_below="@id/eSsn"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/ssnProgress"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/confCont"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:id="@+id/confText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textSize="20sp"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:textColor="#000"/>
+
+        <Button
+            android:id="@+id/confBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp"
+            android:text="Confirm"
+            android:textColor="#fff"
+            android:background="@color/colorPrimary"/>
+
+        <Button
+            android:id="@+id/notMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This Isn't Me"
+            android:textColor="#fff"
+            android:background="@color/colorPrimary"
+            android:layout_below="@id/confBtn"
+            android:layout_centerHorizontal="true"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/contactAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/contactText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_margin="40dp"
+            android:text="Please contact system admin for access or re-enter the last 4 digits of your Social Security Number."/>
+
+        <Button
+            android:id="@+id/reenterSsn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/contactText"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            android:text="Re-Enter"
+            android:textColor="#fff"
+            android:background="@color/colorPrimary"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

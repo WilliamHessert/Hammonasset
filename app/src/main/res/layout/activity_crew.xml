@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hammollc.hammonasset.CrewActivity">
+
+    <EditText
+        android:id="@+id/enterPoNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="P.O. Number"
+        android:focusable="false"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:id="@+id/enterCrewDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Crew Date"
+        android:focusable="false"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/enterPoNumber"/>
+
+    <RelativeLayout
+        android:id="@+id/dayNigHolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/enterCrewDate"
+        android:layout_margin="10dp"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/dBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_margin="20dp"
+            android:background="@drawable/box"
+            android:text="Day"
+            android:textColor="@color/colorPrimary"/>
+
+        <Button
+            android:id="@+id/nBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="20dp"
+            android:background="@drawable/box"
+            android:text="Night"
+            android:textColor="@color/colorPrimary"/>
+
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/crewProgress"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:visibility="gone"
+        android:layout_centerInParent="true"/>
+
+    <RelativeLayout
+        android:id="@+id/selectCrewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/addEmpBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="50dp"
+            android:layout_margin="10dp"
+            android:text="Add Employee"
+            android:textColor="#fff"/>
+
+        <Button
+            android:id="@+id/addDefCrewBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="50dp"
+            android:layout_margin="10dp"
+            android:text="Add Default Crew"
+            android:textColor="#fff"/>
+
+        <Button
+            android:id="@+id/createCrewBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="10dp"
+            android:text="Create Crew"
+            android:textColor="#fff"/>
+
+        <ListView
+            android:id="@+id/addEmpList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/addEmpBtn"
+            android:layout_above="@id/createCrewBtn"
+            android:layout_marginTop="?android:attr/actionBarSize"
+            android:layout_margin="10dp"/>
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,356 @@
+<resources>
+    <string name="app_name">Hammonasset</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_foreman">ForemanActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="privacy_link"><u>Privacy Policy</u></string>
+
+    <string-array name="towns">
+        <item>Andover</item>
+
+        <item>Ansonia</item>
+
+        <item>Ashford</item>
+
+        <item>Avon</item>
+
+        <item>Barkhamsted</item>
+
+        <item>Beacon Falls</item>
+
+        <item>Berlin</item>
+
+        <item>Bethany</item>
+
+        <item>Bethel</item>
+
+        <item>Bethlehem</item>
+
+        <item>Bloomfield</item>
+
+        <item>Bolton</item>
+
+        <item>Bozrah</item>
+
+        <item>Branford</item>
+
+        <item>Bridgeport</item>
+
+        <item>Bridgewater</item>
+
+        <item>Bristol</item>
+
+        <item>Brookfield</item>
+
+        <item>Brooklyn</item>
+
+        <item>Burlington</item>
+
+        <item>Canaan</item>
+
+        <item>Canterbury</item>
+
+        <item>Canton</item>
+
+        <item>Chaplin</item>
+
+        <item>Cheshire</item>
+
+        <item>Chester</item>
+
+        <item>Clinton</item>
+
+        <item>Colchester</item>
+
+        <item>Colebrook</item>
+
+        <item>Columbia</item>
+
+        <item>Cornwall</item>
+
+        <item>Coventry</item>
+
+        <item>Cromwell</item>
+
+        <item>Danbury</item>
+
+        <item>Darien</item>
+
+        <item>Deep River</item>
+
+        <item>Derby</item>
+
+        <item>Durham</item>
+
+        <item>East Granby</item>
+
+        <item>East Haddam</item>
+
+        <item>East Hampton</item>
+
+        <item>East Hartford</item>
+
+        <item>East Haven</item>
+
+        <item>East Lyme</item>
+
+        <item>East Windsor</item>
+
+        <item>Eastford</item>
+
+        <item>Easton</item>
+
+        <item>Ellington</item>
+
+        <item>Enfield</item>
+
+        <item>Essex</item>
+
+        <item>Fairfield</item>
+
+        <item>Farmington</item>
+
+        <item>Franklin</item>
+
+        <item>Glastonbury</item>
+
+        <item>Goshen</item>
+
+        <item>Granby</item>
+
+        <item>Greenwich</item>
+
+        <item>Griswold</item>
+
+        <item>Groton</item>
+
+        <item>Guilford</item>
+
+        <item>Haddam</item>
+
+        <item>Hamden</item>
+
+        <item>Hampton</item>
+
+        <item>Hartford</item>
+
+        <item>Hartland</item>
+
+        <item>Harwinton</item>
+
+        <item>Hebron</item>
+
+        <item>Kent</item>
+
+        <item>Killingly</item>
+
+        <item>Killingworth</item>
+
+        <item>Lebanon</item>
+
+        <item>Ledyard</item>
+
+        <item>Lisbon</item>
+
+        <item>Litchfield</item>
+
+        <item>Lyme</item>
+
+        <item>Madison</item>
+
+        <item>Manchester</item>
+
+        <item>Mansfield</item>
+
+        <item>Marlborough</item>
+
+        <item>Meriden</item>
+
+        <item>Middlebury</item>
+
+        <item>Middlefield</item>
+
+        <item>Middletown</item>
+
+        <item>Milford</item>
+
+        <item>Monroe</item>
+
+        <item>Montville</item>
+
+        <item>Morris</item>
+
+        <item>Naugatuck</item>
+
+        <item>Newington</item>
+
+        <item>Newtown</item>
+
+        <item>New Britain</item>
+
+        <item>New Canaan</item>
+
+        <item>New Fairfield</item>
+
+        <item>New Hartford</item>
+
+        <item>New Haven</item>
+
+        <item>New London</item>
+
+        <item>New Milford</item>
+
+        <item>Norfolk</item>
+
+        <item>North Branford</item>
+
+        <item>North Canaan</item>
+
+        <item>North Haven</item>
+
+        <item>North Stonington</item>
+
+        <item>Norwalk</item>
+
+        <item>Norwich</item>
+
+        <item>Old Lyme</item>
+
+        <item>Old Saybrook</item>
+
+        <item>Orange</item>
+
+        <item>Oxford</item>
+
+        <item>Plainfield</item>
+
+        <item>Plainville</item>
+
+        <item>Plymouth</item>
+
+        <item>Pomfret</item>
+
+        <item>Portland</item>
+
+        <item>Preston</item>
+
+        <item>Prospect</item>
+
+        <item>Putnam</item>
+
+        <item>Redding</item>
+
+        <item>Ridgefield</item>
+
+        <item>Rocky Hill</item>
+
+        <item>Roxbury</item>
+
+        <item>Salem</item>
+
+        <item>Salisbury</item>
+
+        <item>Scotland</item>
+
+        <item>Seymour</item>
+
+        <item>Sharon</item>
+
+        <item>Shelton</item>
+
+        <item>Sherman</item>
+
+        <item>Simsbury</item>
+
+        <item>Somers</item>
+
+        <item>South Windsor</item>
+
+        <item>Southbury</item>
+
+        <item>Southington</item>
+
+        <item>Sprague</item>
+
+        <item>Stafford</item>
+
+        <item>Stamford</item>
+
+        <item>Sterling</item>
+
+        <item>Stonington</item>
+
+        <item>Stratford</item>
+
+        <item>Suffield</item>
+
+        <item>Thomaston</item>
+
+        <item>Thompson</item>
+
+        <item>Tolland</item>
+
+        <item>Torrington</item>
+
+        <item>Trumbull</item>
+
+        <item>Union</item>
+
+        <item>Vernon</item>
+
+        <item>Voluntown</item>
+
+        <item>Wallingford</item>
+
+        <item>Warren</item>
+
+        <item>Washington</item>
+
+        <item>Waterbury</item>
+
+        <item>Waterford</item>
+
+        <item>Watertown</item>
+
+        <item>West Hartford</item>
+
+        <item>West Haven</item>
+
+        <item>Westbrook</item>
+
+        <item>Weston</item>
+
+        <item>Westport</item>
+
+        <item>Wethersfield</item>
+
+        <item>Willington</item>
+
+        <item>Wilton</item>
+
+        <item>Winchester</item>
+
+        <item>Windham</item>
+
+        <item>Windsor</item>
+
+        <item>Windsor Locks</item>
+
+        <item>Wolcott</item>
+
+        <item>Woodbridge</item>
+
+        <item>Woodbury</item>
+    </string-array>
+
+</resources>

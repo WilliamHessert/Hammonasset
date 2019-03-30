@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hammollc.hammonasset.EmergencyContact"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Emergency Contact"
+                android:textSize="30sp"
+                android:textColor="#000"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter all fields then press submit.\nEnter at least 2 phone numbers or 1 phone number an email address"
+                android:textSize="20sp"
+                android:textColor="#000"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_margin="20dp"/>
+
+            <EditText
+                android:id="@+id/eName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:inputType="text"
+                android:hint="Contact Name"/>
+
+            <EditText
+                android:id="@+id/eRel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:hint="Contact's Relationship to You"
+                android:inputType="text"/>
+
+            <EditText
+                android:id="@+id/pPho"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:inputType="phone"
+                android:hint="Primary 10-Digit Phone Number"/>
+
+            <EditText
+                android:id="@+id/sPho"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:inputType="phone"
+                android:hint="Secondary 10-Digit Phone Number"/>
+
+            <EditText
+                android:id="@+id/ecEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:inputType="textEmailAddress"
+                android:hint="Email Address"/>
+
+            <Button
+                android:id="@+id/ecBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:text="Submit"
+                android:textColor="#fff"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

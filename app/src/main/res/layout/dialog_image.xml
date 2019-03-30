@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/addImageBtn"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:text="Add"
+        android:textColor="#fff"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"/>
+
+    <Button
+        android:id="@+id/cancelImageBtn"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:text="Cancel"
+        android:textColor="#fff"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"/>
+
+    <EditText
+        android:id="@+id/imageDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Image Description (optional)"
+        android:lines="4"
+        android:layout_margin="10dp"
+        android:layout_above="@id/addImageBtn" />
+
+    <EditText
+        android:id="@+id/imageName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Image Name"
+        android:layout_margin="10dp"
+        android:layout_above="@id/imageDesc"/>
+
+    <ImageView
+        android:id="@+id/viewCapturedImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/imageName"
+        android:layout_margin="10dp"
+        android:contentDescription="Captured Picture" />
+</RelativeLayout>
