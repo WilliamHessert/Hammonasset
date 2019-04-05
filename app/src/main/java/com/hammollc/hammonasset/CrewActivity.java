@@ -72,9 +72,9 @@ public class CrewActivity extends AppCompatActivity {
         this.pBar = (ProgressBar) findViewById(R.id.crewProgress);
         this.pField = (EditText) findViewById(R.id.enterPoNumber);
         this.dField = (EditText) findViewById(R.id.enterCrewDate);
-        this.pBar.setVisibility(View.GONE);
-        this.pField.setVisibility(View.VISIBLE);
-        this.dField.setVisibility(View.VISIBLE);
+        this.pBar.setVisibility(View.VISIBLE);
+        this.pField.setVisibility(View.GONE);
+        this.dField.setVisibility(View.GONE);
         downloadPoNumsNum();
     }
 
@@ -131,33 +131,14 @@ public class CrewActivity extends AppCompatActivity {
         this.pField.setVisibility(View.VISIBLE);
         this.dField.setVisibility(View.VISIBLE);
 
+
         final EditText dText = this.dField;
         final EditText pNum = this.pField;
         Calendar mcurrentDate = Calendar.getInstance();
         final int mYear = mcurrentDate.get(Calendar.YEAR);
         final int mMonth = mcurrentDate.get(Calendar.MONTH);
         final int mDay = mcurrentDate.get(Calendar.DATE);
-        dText.setOnClickListener(new OnClickListener() {
 
-            /* renamed from: com.hammollc.hammonasset.CrewActivity$3$1 */
-            class C03601 implements OnDateSetListener {
-                C03601() {
-                }
-
-                public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
-                    selectedmonth++;
-                    dText.setText("" + selectedmonth + "/" + selectedday + "/" + selectedyear);
-                    CrewActivity.this.setDate(selectedmonth, selectedday, selectedyear);
-                    CrewActivity.this.addBtnViews();
-                }
-            }
-
-            public void onClick(View v) {
-                DatePickerDialog mDatePicker = new DatePickerDialog(CrewActivity.this, new C03601(), mYear, mMonth, mDay);
-                mDatePicker.setTitle("Select Date");
-                mDatePicker.show();
-            }
-        });
         pNum.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 final Dialog dialog = new Dialog(CrewActivity.this);
@@ -169,6 +150,29 @@ public class CrewActivity extends AppCompatActivity {
                 empList.setOnItemClickListener(new OnItemClickListener() {
                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                         pNum.setText(poNums.get(position));
+                        dField.setClickable(true);
+
+                        dText.setOnClickListener(new OnClickListener() {
+                            /* renamed from: com.hammollc.hammonasset.CrewActivity$3$1 */
+                            class C03601 implements OnDateSetListener {
+                                C03601() {
+                                }
+
+                                public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
+                                    selectedmonth++;
+                                    dText.setText("" + selectedmonth + "/" + selectedday + "/" + selectedyear);
+                                    CrewActivity.this.setDate(selectedmonth, selectedday, selectedyear);
+                                    CrewActivity.this.addBtnViews();
+                                }
+                            }
+
+                            public void onClick(View v) {
+                                DatePickerDialog mDatePicker = new DatePickerDialog(CrewActivity.this, new C03601(), mYear, mMonth, mDay);
+                                mDatePicker.setTitle("Select Date");
+                                mDatePicker.show();
+                            }
+                        });
+
                         dialog.dismiss();
                     }
                 });
@@ -328,7 +332,10 @@ public class CrewActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference("Users").addChildEventListener(new ChildEventListener() {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String key = dataSnapshot.getKey();
-                if (key.length() > 20 && !key.equals(CrewActivity.this.uid)) {
+//                if (key.length() > 20 && !key.equals(CrewActivity.this.uid)) {
+//                    CrewActivity.this.addEmp(dataSnapshot, ref);
+//                }
+                if (!key.equals(CrewActivity.this.uid)) {
                     CrewActivity.this.addEmp(dataSnapshot, ref);
                 }
             }

@@ -255,7 +255,7 @@ public class DailyReportActivity extends AppCompatActivity {
         db = FirebaseDatabase.getInstance();
         final DatabaseReference ref = db.getReference(
                 "Contracts").child("16PSX0176").child("poNums").child(poNumber);
-
+        Log.i("AHHH", poNumber);
         ref.child("number").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

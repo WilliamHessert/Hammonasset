@@ -705,7 +705,17 @@ public class ForemanActivity extends AppCompatActivity
         sub = newLineSplit[0];
 
         String[] spaceSplit = sub.split(" ");
-        return spaceSplit[0];
+        String output = spaceSplit[0];
+
+        for(int j=1; j<spaceSplit.length; j++) {
+            String s = spaceSplit[j];
+
+            if(!s.equals("Report")) {
+                output += " "+s;
+            }
+        }
+
+        return output;
     }
 
     private String getReportDateString(Item i) {
