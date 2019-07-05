@@ -4,7 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,22 +17,20 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.pdf.PdfDocument;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.FileUriExposedException;
-import android.os.Handler;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Log;
@@ -53,7 +51,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -68,8 +65,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,6 +122,7 @@ public class DailyReportActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
 
+    private static final int WRITE_REQUEST_CODE = 3888;
     private static final int STORAGE_REQUEST = 2888;
     private static final int RESULT_LOAD_IMG = 200;
 
@@ -1387,7 +1388,7 @@ public class DailyReportActivity extends AppCompatActivity {
             public void onClick(View v) {
                 cont.setText("Continue >");
                 finalSignature = mSignature.save();
-                openPolice();
+                createPDF();
             }
         });
     }
@@ -2178,6 +2179,15 @@ public class DailyReportActivity extends AppCompatActivity {
                 Toast.makeText(this, "Camera Permission Denied", Toast.LENGTH_LONG).show();
             }
         }
+        else if(requestCode == WRITE_REQUEST_CODE) {
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                createPDF();
+            }
+            else{
+                Toast.makeText(DailyReportActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                finishAndClose();
+            }
+        }
         else {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
@@ -2647,6 +2657,254 @@ public class DailyReportActivity extends AppCompatActivity {
         });
     }
 
+    private void createPDF() {
+//        String extstoragedir = Environment.getExternalStorageDirectory().toString();
+//        File fol = new File(extstoragedir, "pdf");
+//        File folder=new File(fol,"pdf");
+//        if(!folder.exists()) {
+//            boolean bool = folder.mkdir();
+//        }
+        String path = Environment.getExternalStorageDirectory() + "/";
+// Create the parent path
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String fullName = path + "sample.pdf";
+        File file = new File (fullName);
+
+        try {
+//            final File file = new File(folder, "sample.pdf");
+//            file.createNewFile();
+            FileOutputStream fOut = new FileOutputStream(file);
+
+
+            PdfDocument document = new PdfDocument();
+            Bitmap background = BitmapFactory.decodeResource(
+                    DailyReportActivity.this.getResources(), R.drawable.daily_report);
+
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(
+                    background.getWidth(), background.getHeight(), 1).create();
+            PdfDocument.Page page = document.startPage(pageInfo);
+            Canvas canvas = page.getCanvas();
+
+            Paint paint = new Paint();
+            paint.setColor(Color.parseColor("#ffffff"));
+            canvas.drawPaint(paint);
+
+            background = Bitmap.createScaledBitmap(
+                    background, background.getWidth(), background.getHeight(), true);
+            paint.setColor(Color.BLUE);
+            canvas.drawBitmap(background, 0, 0 , null);
+
+            EditText pText = findViewById(R.id.poNum);
+            EditText dText = findViewById(R.id.repDate);
+            EditText tText = findViewById(R.id.repTime);
+            EditText iText = findViewById(R.id.eInspector);
+            EditText bText = findViewById(R.id.eBridge);
+            EditText lText = findViewById(R.id.eLocation);
+            EditText cText = findViewById(R.id.eCity);
+            EditText sText = findViewById(R.id.eSafetyNotes);
+            EditText vText = findViewById(R.id.eMiscNotes);
+
+            String p = pText.getText().toString();
+            String t = tText.getText().toString();
+            String i = iText.getText().toString();
+            String b = bText.getText().toString();
+            String l = lText.getText().toString();
+            String c = cText.getText().toString();
+            String d1 = dText.getText().toString();
+            String d2 = getWeekEndingDate(d1);
+            String w = getTodaysDay(d1);
+            String n = getIntent()
+                    .getStringExtra("fName")+" "+getIntent().getStringExtra("lName");
+            String s = sText.getText().toString();
+            String v = vText.getText().toString();
+
+            paint.setColor(Color.BLACK);
+            TextPaint tp = new TextPaint();
+            tp.set(paint);
+            tp.setTextSize(60);
+
+            canvas.drawText(p, convertWidth(background,63), convertHeight(background, 69), tp);
+            canvas.drawText(i, convertWidth(background,265), convertHeight(background, 69), tp);
+            canvas.drawText(d2, convertWidth(background,500), convertHeight(background, 69), tp);
+            canvas.drawText(b, convertWidth(background,90), convertHeight(background, 100), tp);
+            canvas.drawText(l, convertWidth(background,200), convertHeight(background, 100), tp);
+            canvas.drawText(c, convertWidth(background,435), convertHeight(background, 100), tp);
+            canvas.drawText(n, convertWidth(background,225), convertHeight(background, 123), tp);
+            canvas.drawText(d1, convertWidth(background,390), convertHeight(background, 153), tp);
+
+            int newLineIndex = 60;
+            ArrayList<String> sNotesLines = new ArrayList<>();
+
+            while(newLineIndex < s.length()) {
+                int in;
+
+                if(newLineIndex > s.length())
+                    sNotesLines.add(s);
+                else {
+                    in = s.substring(0, newLineIndex).lastIndexOf(" ");
+                    sNotesLines.add(s.substring(0, in));
+                    s = s.substring(in+1);
+                }
+            }
+
+            newLineIndex = 60;
+            ArrayList<String> vNotesLines = new ArrayList<>();
+
+            while(newLineIndex < v.length()) {
+                int in;
+
+                if(newLineIndex > v.length())
+                    vNotesLines.add(v);
+                else {
+                    in = v.substring(0, newLineIndex).lastIndexOf(" ");
+                    vNotesLines.add(v.substring(0, in));
+                    v = v.substring(in+1);
+                }
+            }
+
+            int nWidth = convertWidth(background, 335);
+            int nHeight = convertHeight(background, 295);
+
+            for(int jj=0; jj<sNotesLines.size(); jj++) {
+                canvas.drawText(sNotesLines.get(jj), nWidth, nHeight, tp);
+                nHeight += convertHeight(background, 8);
+            }
+
+            nHeight = convertHeight(background, 640);
+
+            for(int kk=0; kk<vNotesLines.size(); kk++) {
+                canvas.drawText(vNotesLines.get(kk), nWidth, nHeight, tp);
+                nHeight += convertHeight(background, 8);
+            }
+//
+//            canvas.drawText(s, convertWidth(background, 335), convertHeight(background, 295), tp);
+//            canvas.drawText(v, convertWidth(background, 335), convertHeight(background, 640), tp);
+
+            tp.setTextSize(50);
+            int width1 = convertWidth(background, 35);
+            int width2 = convertWidth(background, 250);
+            int width3 = convertWidth(background, 280);
+            int height = convertHeight(background, 172);
+
+            for(int j=0; j<finalPayItems.size(); j++) {
+                PayItem pItem = finalPayItems.get(j);
+                String mainText = pItem.getCode()+" - "+pItem.getName();
+
+                canvas.drawText(mainText, width1, height, tp);
+                canvas.drawText(pItem.getUnit(), width2, height, tp);
+                canvas.drawText(pItem.getSimpleValue(), width3, height, tp);
+
+                height += convertHeight(background, 15);
+            }
+
+            width1 = convertWidth(background, 330);
+            height = convertHeight(background, 380);
+
+            for(int k=0; k<finalAccomplishments.size(); k++) {
+                String acc = finalAccomplishments.get(k);
+                canvas.drawText(acc, width1, height, tp);
+                height += convertHeight(background, 13);
+            }
+
+//            int m = 1;
+//
+//            switch(w) {
+//                case "Monday":
+//                    m = 2;
+//                    break;
+//                case "Tuesday":
+//                    m = 3;
+//                    break;
+//                case "Wednesday":
+//                    m = 4;
+//                    break;
+//                case "Thursday":
+//                    m = 5;
+//                    break;
+//                case "Friday":
+//                    m = 6;
+//                    break;
+//                case "Saturday":
+//                    m = 7;
+//                    break;
+//            }
+
+            w += " "+t.substring(0, 1).toUpperCase()+t.substring(1);
+            canvas.drawText(w, convertWidth(background,420), convertHeight(background, 182), tp);
+
+            paint.setStyle(Paint.Style.STROKE);
+            canvas.drawCircle(convertWidth(background,339),
+                    convertHeight(background,252),convertWidth(background,11), paint);
+
+//            tp.setTextSize(48);
+//            if(tText.getText().toString().equals("day"))
+//                canvas.drawText("X",
+//                        convertWidth(background, 368), convertHeight(background, 195), tp);
+//            else
+//                canvas.drawText("X",
+//                        convertWidth(background, 452), convertHeight(background, 195), tp);
+
+            paint.setStyle(Paint.Style.FILL);
+            Bitmap sig = Bitmap.createScaledBitmap(sigImage,
+                    convertWidth(background, 145), convertHeight(background, 35), true);
+            Rect r = new Rect(convertWidth(background, 425),
+                    convertHeight(background, 705),
+                    convertWidth(background, 570),
+                    convertHeight(background, 740));
+            canvas.drawBitmap(sig, new Rect(0, 0, sig.getWidth(), sig.getHeight()), r, paint);
+
+            document.finishPage(page);
+            document.writeTo(fOut);
+            document.close();
+
+            Intent pdfViewIntent = new Intent(Intent.ACTION_VIEW);
+            pdfViewIntent.setDataAndType(Uri.fromFile(file),"application/pdf");
+            pdfViewIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+            Intent intent = Intent.createChooser(pdfViewIntent, "Open File");
+
+            try {
+                if(Build.VERSION.SDK_INT>=24){
+                    try{
+                        Method method = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
+                        method.invoke(null);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+                startActivity(Intent.createChooser(intent, "Choose PDF Viewer"));
+            } catch (ActivityNotFoundException e) {
+                Log.i("AHHH", "PDF not viewable");
+            }
+
+        } catch (IOException e){
+            if(e.getLocalizedMessage().contains("Permission")) {
+                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                requestPermissions(permissions, WRITE_REQUEST_CODE);
+            }
+            else {
+                Toast.makeText(DailyReportActivity.this,
+                        "Could not produce PDF", Toast.LENGTH_LONG).show();
+                Log.i("error", e.getLocalizedMessage());
+            }
+        }
+
+        openPolice();
+    }
+
+    private int convertWidth(Bitmap b, int x) {
+        return ((x*b.getWidth())/612);
+    }
+
+    private int convertHeight(Bitmap b, int y) {
+        return ((y*b.getHeight())/792);
+    }
+
     private void finishAndClose() {
         Toast.makeText(DailyReportActivity.this, "Successfully Uploaded!", Toast.LENGTH_LONG).show();
         clearAllValues();
@@ -3044,5 +3302,63 @@ public class DailyReportActivity extends AppCompatActivity {
         }
 
         return date+" error";
+    }
+
+    private String getTodaysDay(String date) {
+        Date d;
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy", Locale.US);
+
+        try {
+            d = sdf.parse(date);
+        } catch (ParseException ex) {
+            Log.v("Exception", ex.getLocalizedMessage());
+            return "Monday";
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
+    }
+
+    private String getWeekEndingDate(String date) {
+        Date d;
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy", Locale.US);
+
+        try {
+            d = sdf.parse(date);
+        } catch (ParseException ex) {
+            Log.v("Exception", ex.getLocalizedMessage());
+            return date;
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        int day = c.get(Calendar.DAY_OF_WEEK);
+
+        switch(day) {
+            case Calendar.SUNDAY:
+                return date;
+            case Calendar.SATURDAY:
+                c.add(Calendar.DATE, 1);
+                break;
+            case Calendar.FRIDAY:
+                c.add(Calendar.DATE, 2);
+                break;
+            case Calendar.THURSDAY:
+                c.add(Calendar.DATE, 3);
+                break;
+            case Calendar.WEDNESDAY:
+                c.add(Calendar.DATE, 4);
+                break;
+            case Calendar.TUESDAY:
+                c.add(Calendar.DATE, 5);
+                break;
+            case Calendar.MONDAY:
+                c.add(Calendar.DATE, 6);
+                break;
+        }
+
+        d = c.getTime();
+        return sdf.format(d);
     }
 }
