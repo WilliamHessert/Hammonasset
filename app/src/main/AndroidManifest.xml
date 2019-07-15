@@ -49,7 +49,10 @@
         <activity android:name=".ProcessorActivity" />
         <activity android:name=".CrewActivity" />
         <activity android:name=".DailyReportActivity" />
-        <activity android:name=".CrewHistory"></activity>
+        <activity android:name=".CrewHistory" />
+        <activity android:name=".LicenseActivity" />
+        <activity android:name=".MedicalCertificateActivity" />
+        <activity android:name=".OshaCardActivity"></activity>
     </application>
 
 </manifest>

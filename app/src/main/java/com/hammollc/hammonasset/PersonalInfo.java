@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -35,6 +36,9 @@ public class PersonalInfo extends AppCompatActivity {
         uid = getIntent().getStringExtra("uid");
         String[] perInfo = getIntent().getStringArrayExtra("perInfo");
         assignValues(perInfo);
+
+        if(uid == null)
+            setUid();
 
         Button sub = findViewById(R.id.iBtn);
         sub.setOnClickListener(new View.OnClickListener() {
@@ -157,5 +161,18 @@ public class PersonalInfo extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void setUid() {
+        try {
+            uid = FirebaseAuth.getInstance().getUid();
+        } catch (Exception e) {
+            Toast.makeText(PersonalInfo.this,
+                    "You must login again...", Toast.LENGTH_LONG).show();
+
+            Intent i = new Intent(
+                    PersonalInfo.this, LoginActivity.class);
+            PersonalInfo.this.startActivity(i);
+        }
     }
 }

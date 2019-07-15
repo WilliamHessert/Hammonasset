@@ -69,7 +69,7 @@ public class ProcessorActivity extends AppCompatActivity {
             openLaborer();
         }
         else if(t.equals("Foreman")) {
-            handleForeman();
+            openLaborer();
         }
         else {
             handleForeman();

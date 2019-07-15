@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -35,6 +36,9 @@ public class EmergencyContact extends AppCompatActivity {
         uid = getIntent().getStringExtra("uid");
         String[] conInfo = getIntent().getStringArrayExtra("conInfo");
         assignValues(conInfo);
+
+        if(uid == null)
+            setUid();
 
         Button sub = findViewById(R.id.ecBtn);
         sub.setOnClickListener(new View.OnClickListener() {
@@ -140,9 +144,18 @@ public class EmergencyContact extends AppCompatActivity {
                 });
             }
         });
+    }
 
+    private void setUid() {
+        try {
+            uid = FirebaseAuth.getInstance().getUid();
+        } catch (Exception e) {
+            Toast.makeText(EmergencyContact.this,
+                    "You must login again...", Toast.LENGTH_LONG).show();
 
-
-
+            Intent i = new Intent(
+                    EmergencyContact.this, LoginActivity.class);
+            EmergencyContact.this.startActivity(i);
+        }
     }
 }
