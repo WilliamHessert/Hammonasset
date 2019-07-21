@@ -32,6 +32,10 @@
                     android:id="@+id/nav_orders"
                     android:icon="@drawable/approve"
                     android:title="My Work Orders" />
+                <item
+                    android:id="@+id/nav_receipts"
+                    android:icon="@drawable/ic_attach_money_black_24dp"
+                    android:title="Upload Receipt" />
             </menu>
         </item>
     </group>

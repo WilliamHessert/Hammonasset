@@ -914,6 +914,9 @@ public class ForemanActivity extends AppCompatActivity
             case R.id.nav_orders:
                 openCrewHistory("", "");
                 break;
+            case R.id.nav_receipts:
+                openReceiptActivity();
+                break;
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -958,6 +961,14 @@ public class ForemanActivity extends AppCompatActivity
         i.putExtra("date", date);
         i.putExtra("time", time);
 
+        i.putExtra("fName", fName);
+        i.putExtra("lName", lName);
+        ForemanActivity.this.startActivity(i);
+    }
+
+    private void openReceiptActivity() {
+        Intent i = new Intent(ForemanActivity.this, ReceiptActivity.class);
+        i.putExtra("uid", uid);
         i.putExtra("fName", fName);
         i.putExtra("lName", lName);
         ForemanActivity.this.startActivity(i);

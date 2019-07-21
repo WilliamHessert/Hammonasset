@@ -2725,17 +2725,18 @@ public class DailyReportActivity extends AppCompatActivity {
             paint.setColor(Color.BLACK);
             TextPaint tp = new TextPaint();
             tp.set(paint);
-            tp.setTextSize(60);
+            tp.setTextSize(32);
 
             canvas.drawText(p, convertWidth(background,63), convertHeight(background, 69), tp);
             canvas.drawText(i, convertWidth(background,265), convertHeight(background, 69), tp);
             canvas.drawText(d2, convertWidth(background,500), convertHeight(background, 69), tp);
-            canvas.drawText(b, convertWidth(background,90), convertHeight(background, 100), tp);
+            canvas.drawText(b, convertWidth(background,82), convertHeight(background, 100), tp);
             canvas.drawText(l, convertWidth(background,200), convertHeight(background, 100), tp);
             canvas.drawText(c, convertWidth(background,435), convertHeight(background, 100), tp);
-            canvas.drawText(n, convertWidth(background,225), convertHeight(background, 123), tp);
+            canvas.drawText(n, convertWidth(background,225), convertHeight(background, 125), tp);
             canvas.drawText(d1, convertWidth(background,390), convertHeight(background, 153), tp);
 
+            tp.setTextSize(24);
             int newLineIndex = 60;
             ArrayList<String> sNotesLines = new ArrayList<>();
 
@@ -2784,7 +2785,7 @@ public class DailyReportActivity extends AppCompatActivity {
 //            canvas.drawText(s, convertWidth(background, 335), convertHeight(background, 295), tp);
 //            canvas.drawText(v, convertWidth(background, 335), convertHeight(background, 640), tp);
 
-            tp.setTextSize(50);
+//            tp.setTextSize(24);
             int width1 = convertWidth(background, 35);
             int width2 = convertWidth(background, 250);
             int width3 = convertWidth(background, 280);
@@ -2810,43 +2811,12 @@ public class DailyReportActivity extends AppCompatActivity {
                 height += convertHeight(background, 13);
             }
 
-//            int m = 1;
-//
-//            switch(w) {
-//                case "Monday":
-//                    m = 2;
-//                    break;
-//                case "Tuesday":
-//                    m = 3;
-//                    break;
-//                case "Wednesday":
-//                    m = 4;
-//                    break;
-//                case "Thursday":
-//                    m = 5;
-//                    break;
-//                case "Friday":
-//                    m = 6;
-//                    break;
-//                case "Saturday":
-//                    m = 7;
-//                    break;
-//            }
-
             w += " "+t.substring(0, 1).toUpperCase()+t.substring(1);
             canvas.drawText(w, convertWidth(background,420), convertHeight(background, 182), tp);
 
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawCircle(convertWidth(background,339),
                     convertHeight(background,252),convertWidth(background,11), paint);
-
-//            tp.setTextSize(48);
-//            if(tText.getText().toString().equals("day"))
-//                canvas.drawText("X",
-//                        convertWidth(background, 368), convertHeight(background, 195), tp);
-//            else
-//                canvas.drawText("X",
-//                        convertWidth(background, 452), convertHeight(background, 195), tp);
 
             paint.setStyle(Paint.Style.FILL);
             Bitmap sig = Bitmap.createScaledBitmap(sigImage,

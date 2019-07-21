@@ -6,8 +6,8 @@ android {
         applicationId "com.hammollc.hammonasset"
         minSdkVersion 23
         targetSdkVersion 27
-        versionCode 204
-        versionName "2.4"
+        versionCode 300
+        versionName "3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -36,6 +36,7 @@ dependencies {
     compile 'com.google.firebase:firebase-database:15.0.1'
     compile 'com.firebase:firebase-jobdispatcher:0.8.4'
 }
+
 
 
 

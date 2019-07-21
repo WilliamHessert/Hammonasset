@@ -187,7 +187,7 @@ public class LicenseActivity extends AppCompatActivity {
                 encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
             } catch (Exception e) {
                 Toast.makeText(LicenseActivity.this,
-                        "Error loading iamge...", Toast.LENGTH_LONG).show();
+                        "Error loading image...", Toast.LENGTH_LONG).show();
             }
         }
     }

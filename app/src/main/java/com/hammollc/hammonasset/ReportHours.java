@@ -669,7 +669,7 @@ public class ReportHours extends AppCompatActivity {
 
     private void verifyReport() {
         if(bHours == hours) {
-            report();
+            confirmReport();
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
             builder.setTitle("Error");
@@ -690,6 +690,29 @@ public class ReportHours extends AppCompatActivity {
 
             builder.create().show();
         }
+    }
+
+    private void confirmReport() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
+        builder.setTitle("Verify");
+        builder.setMessage("Do you verify that the hours you have reported are completely true?");
+
+        builder.setPositiveButton("Verify", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                report();
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
     }
 
     private void report() {

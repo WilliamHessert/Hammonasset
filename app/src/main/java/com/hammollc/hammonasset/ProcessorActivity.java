@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,12 +39,14 @@ public class ProcessorActivity extends AppCompatActivity {
 
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()) {
+                if(task.isSuccessful())
                     getAccountType();
-                }
-                else {
-                    displayLoginError();
-                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("AHHH", e.getLocalizedMessage());
+                displayLoginError();
             }
         });
     }
@@ -65,16 +68,10 @@ public class ProcessorActivity extends AppCompatActivity {
     }
 
     private void handleType(String t) {
-        if(t.equals("Laborer")) {
+        if(t.equals("Laborer"))
             openLaborer();
-        }
-        else if(t.equals("Foreman")) {
-            openLaborer();
-        }
-        else {
+        else
             handleForeman();
-            //displayTypeError(t);
-        }
     }
 
     private void openLaborer() {

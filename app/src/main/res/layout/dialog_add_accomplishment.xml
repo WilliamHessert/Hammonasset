@@ -20,6 +20,7 @@
         android:layout_below="@id/addDialogText"
         android:layout_margin="10dp"
         android:hint="Accomplishment"
+        android:gravity="start|top"
         android:lines="4"
         android:inputType="textCapSentences|textMultiLine"
         android:background="@drawable/box"

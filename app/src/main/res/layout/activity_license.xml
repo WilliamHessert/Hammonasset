@@ -82,8 +82,7 @@
             android:layout_height="match_parent"
             android:layout_below="@id/lUploadBtn"
             android:layout_above="@id/lSubmitBtn"
-            android:layout_margin="30dp"
-            android:background="@drawable/box"/>
+            android:layout_margin="30dp"/>
     </RelativeLayout>
 
     <ProgressBar
