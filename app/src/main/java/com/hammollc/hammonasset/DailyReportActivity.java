@@ -2807,8 +2807,25 @@ public class DailyReportActivity extends AppCompatActivity {
 
             for(int k=0; k<finalAccomplishments.size(); k++) {
                 String acc = finalAccomplishments.get(k);
-                canvas.drawText(acc, width1, height, tp);
-                height += convertHeight(background, 13);
+                ArrayList<String> lines = new ArrayList<>();
+
+                while(acc.length() > 57) {
+                    String line = acc.substring(0, 58);
+                    int index = line.lastIndexOf(" ");
+                    line = line.substring(0, index);
+
+                    lines.add(line);
+                    acc = acc.substring(index);
+                }
+
+                lines.add(acc);
+
+                for(int kk=0; kk<lines.size(); kk++) {
+                    canvas.drawText(lines.get(kk), width1, height, tp);
+                    height += convertHeight(background, 10);
+                }
+
+                height += convertHeight(background, 15);
             }
 
             w += " "+t.substring(0, 1).toUpperCase()+t.substring(1);
