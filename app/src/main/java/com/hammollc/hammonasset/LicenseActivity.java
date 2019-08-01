@@ -3,12 +3,16 @@ package com.hammollc.hammonasset;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +20,7 @@ import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -33,8 +38,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class LicenseActivity extends AppCompatActivity {
@@ -46,6 +56,7 @@ public class LicenseActivity extends AppCompatActivity {
 
     private ImageView lImage;
     private String encodedString = "";
+    private String mCameraFileName = "";
 
     private ProgressBar pBar;
     private RelativeLayout view;
@@ -74,6 +85,9 @@ public class LicenseActivity extends AppCompatActivity {
 
         uid = getIntent().getStringExtra("uid");
         String[] info = getIntent().getStringArrayExtra("licInfo");
+
+        final Calendar myCalendar = Calendar.getInstance();
+        e = findViewById(R.id.lExpiration);
         assignValues(info);
 
         if(uid == null)
@@ -84,6 +98,26 @@ public class LicenseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 validateData();
+            }
+        });
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel(myCalendar);
+            }
+        };
+
+        e.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(LicenseActivity.this, date,
+                        myCalendar.get(Calendar.YEAR),
+                        myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
@@ -124,7 +158,21 @@ public class LicenseActivity extends AppCompatActivity {
                                     CAMERA_REQUEST);
                         }
                         else {
+                            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+                            StrictMode.setVmPolicy(builder.build());
+
                             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                            Date date = new Date();
+                            DateFormat df = new SimpleDateFormat("MM/dd/yyyy-mm-ss", Locale.US);
+
+                            String newPicFile = df.format(date) + ".jpg";
+                            String outPath = "/sdcard/" + newPicFile;
+                            File outFile = new File(outPath);
+
+                            mCameraFileName = outFile.toString();
+                            Uri outuri = Uri.fromFile(outFile);
+
+                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outuri);
                             startActivityForResult(cameraIntent, CAMERA_REQUEST);
                         }
                     }
@@ -133,6 +181,12 @@ public class LicenseActivity extends AppCompatActivity {
                 builder.create().show();
             }
         });
+    }
+
+    private void updateLabel(Calendar myCalendar) {
+        String myFormat = "MM/dd/yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        e.setText(sdf.format(myCalendar.getTime()));
     }
 
     @Override
@@ -165,13 +219,29 @@ public class LicenseActivity extends AppCompatActivity {
         pBar.setVisibility(View.GONE);
 
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            try {
+                final Uri imageUri = Uri.fromFile(new File(mCameraFileName));
+                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
 
-            lImage.setImageBitmap(bitmap);
-            byte[] byteArray = byteArrayOutputStream .toByteArray();
-            encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+
+                lImage.setImageBitmap(bitmap);
+                byte[] byteArray = byteArrayOutputStream.toByteArray();
+                encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(LicenseActivity.this,
+                        "Error loading image...", Toast.LENGTH_LONG).show();
+            }
+//            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+//
+//            lImage.setImageBitmap(bitmap);
+//            byte[] byteArray = byteArrayOutputStream .toByteArray();
+//            encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
         }
         else if (requestCode == RESULT_LOAD_IMG && resultCode == Activity.RESULT_OK) {
             try {
@@ -205,7 +275,6 @@ public class LicenseActivity extends AppCompatActivity {
 
     private void assignValues(String[] info) {
         n = findViewById(R.id.lNumber);
-        e = findViewById(R.id.lExpiration);
         s = findViewById(R.id.lState);
         i = findViewById(R.id.lImage);
 
