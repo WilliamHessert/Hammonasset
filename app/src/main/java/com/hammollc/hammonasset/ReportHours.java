@@ -70,7 +70,6 @@ public class ReportHours extends AppCompatActivity {
 
     int bIndex;
     boolean isDay;
-    ArrayList<String> options;
     ArrayList<Block> blocks;
     BlockAdapter ad;
 
@@ -80,6 +79,8 @@ public class ReportHours extends AppCompatActivity {
     ArrayList<Boolean> isNewOther = new ArrayList<>();
     ArrayList<String[]> savedOthers = new ArrayList<>();
 
+    ArrayList<HourOption> sOptions = new ArrayList<>();
+    ArrayList<HourOption> nOptions = new ArrayList<>();
 
     String uid, week, date, dString;
 
@@ -93,7 +94,7 @@ public class ReportHours extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         uid = FirebaseAuth.getInstance().getUid();
-        setViews();
+        getOptions();
     }
 
     @Override
@@ -107,30 +108,53 @@ public class ReportHours extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void getOptions() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("PayClassifications");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    String label = data.child("label").getValue(String.class);
+                    String classification = data.child("classification").getValue(String.class);
+                    String standard = data.child("standard").getValue(String.class);
+
+                    HourOption ho = new HourOption(label, classification, standard);
+
+                    if(ho.isStandard())
+                        sOptions.add(ho);
+                    else
+                        nOptions.add(ho);
+                }
+
+                sOptions.add(new HourOption("Other...", "", "true"));
+                setViews();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void setViews() {
+        ProgressBar pBar = findViewById(R.id.hourProgress);
+        RelativeLayout layout = findViewById(R.id.dateTimeView);
+
+        pBar.setVisibility(View.GONE);
+        layout.setVisibility(View.VISIBLE);
+
         Bundle extras = getIntent().getExtras();
         String date = extras.getString("date", "");
         String time = extras.getString("time", "");
 
         isDay = true;
-        setOptions();
         getSavedOthers();
 
         setDateTimePickers(date);
         setDayNig(time);
         setConfirm();
-    }
-
-    private void setOptions() {
-        options = new ArrayList<>();
-
-        options.add("Concrete Worker");
-        options.add("Laborer - Unskilled");
-        options.add("Laborer - Jackhammer");
-        options.add("Laborer - Skilled");
-        options.add("Mason Tender");
-        options.add("Traffic Controller");
-        options.add("Other...");
     }
 
     private void getSavedOthers() {
@@ -398,8 +422,7 @@ public class ReportHours extends AppCompatActivity {
                 builder.setView(alertLayout);
 
                 ListView listView = alertLayout.findViewById(R.id.blockTypeList);
-                ArrayAdapter<String> alAd = new ArrayAdapter<String>(
-                        ReportHours.this, android.R.layout.simple_list_item_1, options);
+                HourOptionAdapter alAd = new HourOptionAdapter(ReportHours.this, sOptions);
                 listView.setAdapter(alAd);
 
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -416,8 +439,8 @@ public class ReportHours extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         dialog.dismiss();
-                        if(position != options.size()-1)
-                            addBlock(options.get(position));
+                        if(position != sOptions.size()-1)
+                            addBlock(sOptions.get(position));
                         else
                             handleOther();
                     }
@@ -428,14 +451,13 @@ public class ReportHours extends AppCompatActivity {
 
     private void handleOther() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
-        builder.setTitle("Choose");
-        builder.setMessage("Please choose whether you want to enter a new value or use a previous" +
-                "value. Please talk to your Foreman before entering an \"Other\" value");
+        builder.setTitle("Warning");
+        builder.setMessage("You are about to view non-standard pay classifications. Confirm with your foreman before selecting any of these");
 
-        builder.setPositiveButton("New", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                enterOther();
+                displayNonStandard();
                 dialog.dismiss();
             }
         });
@@ -447,33 +469,19 @@ public class ReportHours extends AppCompatActivity {
             }
         });
 
-        builder.setNeutralButton("Previous", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                chooseOther();
-                dialog.dismiss();
-            }
-        });
-
         builder.create().show();
     }
 
-    private void enterOther() {
+    private void displayNonStandard() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
-        builder.setTitle("Enter");
-        builder.setMessage("Please enter what work you did.");
+        builder.setTitle("Add Block");
 
-        final EditText tInput = new EditText(ReportHours.this);
-        tInput.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(tInput);
+        final View alertLayout = getLayoutInflater().inflate(R.layout.alert_block_type, null);
+        builder.setView(alertLayout);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String type = tInput.getText().toString();
-                enterOtherDesc(type);
-            }
-        });
+        ListView listView = alertLayout.findViewById(R.id.blockTypeList);
+        HourOptionAdapter alAd = new HourOptionAdapter(ReportHours.this, nOptions);
+        listView.setAdapter(alAd);
 
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -482,103 +490,142 @@ public class ReportHours extends AppCompatActivity {
             }
         });
 
-        builder.create().show();
-    }
+        final AlertDialog dialog = builder.create();
+        dialog.show();
 
-    private void enterOtherDesc(final String t) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
-        builder.setTitle("Enter");
-        builder.setMessage("Please describe the work you did.");
-
-        final EditText dInput = new EditText(ReportHours.this);
-        dInput.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(dInput);
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String desc = dInput.getText().toString();
-                isNewOther.add(true);
-                descs.add(desc);
-
-                int index = blocks.size();
-                indeces.add(index);
-                addBlock(t);
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 dialog.dismiss();
+                addBlock(nOptions.get(position));
             }
         });
-
-        builder.create().show();
     }
 
-    private void chooseOther() {
-        if(savedOthers.size() == 0) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
-            builder.setTitle("Error");
-            builder.setMessage("Sorry, but you have no saved previous values.");
+//    private void enterOther() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
+//        builder.setTitle("Enter");
+//        builder.setMessage("Please enter what work you did.");
+//
+//        final EditText tInput = new EditText(ReportHours.this);
+//        tInput.setInputType(InputType.TYPE_CLASS_TEXT);
+//        builder.setView(tInput);
+//
+//        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                String type = tInput.getText().toString();
+//                enterOtherDesc(type);
+//            }
+//        });
+//
+//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//
+//        builder.create().show();
+//    }
+//
+//    private void enterOtherDesc(final String t) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
+//        builder.setTitle("Enter");
+//        builder.setMessage("Please describe the work you did.");
+//
+//        final EditText dInput = new EditText(ReportHours.this);
+//        dInput.setInputType(InputType.TYPE_CLASS_TEXT);
+//        builder.setView(dInput);
+//
+//        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                String desc = dInput.getText().toString();
+//                isNewOther.add(true);
+//                descs.add(desc);
+//
+//                int index = blocks.size();
+//                indeces.add(index);
+//                addBlock(t);
+//            }
+//        });
+//
+//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//
+//        builder.create().show();
+//    }
+//
+//    private void chooseOther() {
+//        if(savedOthers.size() == 0) {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
+//            builder.setTitle("Error");
+//            builder.setMessage("Sorry, but you have no saved previous values.");
+//
+//            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    dialog.dismiss();
+//                }
+//            });
+//
+//            builder.create().show();
+//        }
+//        else {
+//            final ArrayList<String> types = new ArrayList<>();
+//
+//            for (int i=0; i<savedOthers.size(); i++) {
+//                types.add(savedOthers.get(i)[0]);
+//            }
+//
+//            final Dialog dialog = new Dialog(ReportHours.this);
+//            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            dialog.setCancelable(false);
+//            dialog.setContentView(R.layout.dialog_select_view);
+//
+//            ListView tList = dialog.findViewById(R.id.selectList);
+//            ArrayAdapter<String> tAdapter = new ArrayAdapter<>(
+//                    ReportHours.this, android.R.layout.simple_list_item_1, types);
+//            tList.setAdapter(tAdapter);
+//
+//            tList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    String t = types.get(position);
+//                    String d = savedOthers.get(position)[1];
+//                    descs.add(d);
+//
+//                    int index = blocks.size();
+//                    indeces.add(index);
+//                    addBlock(t);
+//
+//                    isNewOther.add(false);
+//                    dialog.dismiss();
+//                }
+//            });
+//
+//            Button closeBtn = dialog.findViewById(R.id.closeDialog);
+//            closeBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    dialog.dismiss();
+//                }
+//            });
+//
+//            dialog.show();
+//        }
+//    }
 
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-
-            builder.create().show();
-        }
-        else {
-            final ArrayList<String> types = new ArrayList<>();
-
-            for (int i=0; i<savedOthers.size(); i++) {
-                types.add(savedOthers.get(i)[0]);
-            }
-
-            final Dialog dialog = new Dialog(ReportHours.this);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCancelable(false);
-            dialog.setContentView(R.layout.dialog_select_view);
-
-            ListView tList = dialog.findViewById(R.id.selectList);
-            ArrayAdapter<String> tAdapter = new ArrayAdapter<>(
-                    ReportHours.this, android.R.layout.simple_list_item_1, types);
-            tList.setAdapter(tAdapter);
-
-            tList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String t = types.get(position);
-                    String d = savedOthers.get(position)[1];
-                    descs.add(d);
-
-                    int index = blocks.size();
-                    indeces.add(index);
-                    addBlock(t);
-
-                    isNewOther.add(false);
-                    dialog.dismiss();
-                }
-            });
-
-            Button closeBtn = dialog.findViewById(R.id.closeDialog);
-            closeBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-
-            dialog.show();
-        }
-    }
-
-    private void addBlock(String type) {
-        Block block = new Block(type, 0);
+    private void addBlock(HourOption hourOption) {
+        String type = hourOption.getLabel();
+        String clss = hourOption.getClassification();
+        Log.i("AHHH", clss);
+        Block block = new Block(type, clss, 0);
         blocks.add(block);
 
         bHours= 0;
@@ -820,37 +867,55 @@ public class ReportHours extends AppCompatActivity {
         });
     }
 
-    private void updateBlockHours(final DatabaseReference ref, Block block) {
+    private void updateBlockHours(final DatabaseReference ref, final Block block) {
         ref.child("blocks").child(""+bIndex).child("hours")
                 .setValue(block.getHours()).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()) {
-                    int ind1 = indeces.indexOf(bIndex);
-
-                    if(ind1 != -1) {
-                        if(isNewOther.get(ind1)) {
-                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ReportHours.this).edit();
-                            editor.putString(uid + "savedOthersTypes" + nextIndex, blocks.get(bIndex).getType());
-                            editor.putString(uid + "savedOthersDescs" + nextIndex, descs.get(ind1));
-                            editor.apply();
-                        }
-
-                        ref.child("blocks").child(""+bIndex).child("description").setValue(descs.get(ind1)).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                bIndex++;
-                                updateBlocks(ref);
-                            }
-                        });
-                    }
-                    else {
-                        bIndex++;
-                        updateBlocks(ref);
-                    }
+                    updateBlockClassification(ref, block);
+//                    int ind1 = indeces.indexOf(bIndex);
+//
+//                    if(ind1 != -1) {
+//                        if(isNewOther.get(ind1)) {
+//                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ReportHours.this).edit();
+//                            editor.putString(uid + "savedOthersTypes" + nextIndex, blocks.get(bIndex).getType());
+//                            editor.putString(uid + "savedOthersDescs" + nextIndex, descs.get(ind1));
+//                            editor.apply();
+//                        }
+//
+//                        ref.child("blocks").child(""+bIndex).child("description").setValue(descs.get(ind1)).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<Void> task) {
+//                                bIndex++;
+//                                updateBlocks(ref);
+//                            }
+//                        });
+//                    }
+//                    else {
+//                        bIndex++;
+//                        updateBlocks(ref);
+//                    }
                 } else {
                     reportError();
                 }
+            }
+        });
+    }
+
+    private void updateBlockClassification(final DatabaseReference ref, Block block) {
+        Log.i("AHHH", "Starting classification: "+block.getClassification());
+        ref.child("blocks").child(""+bIndex).child("classification")
+                .setValue(block.getClassification()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()) {
+                    Log.i("AHHH", "Completed classification for "+bIndex);
+                    bIndex++;
+                    updateBlocks(ref);
+                }
+                else
+                    reportError();
             }
         });
     }

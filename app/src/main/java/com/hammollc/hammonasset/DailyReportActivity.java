@@ -53,7 +53,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -62,6 +65,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -1547,6 +1553,7 @@ public class DailyReportActivity extends AppCompatActivity {
     private void openPolice() {
         layoutValue = "pol1";
         cLayout.setVisibility(View.GONE);
+        pBar.setVisibility(View.GONE);
         cLayout = findViewById(R.id.policeHolder);
         cLayout.setVisibility(View.VISIBLE);
 
@@ -2658,6 +2665,8 @@ public class DailyReportActivity extends AppCompatActivity {
     }
 
     private void createPDF() {
+        cLayout.setVisibility(View.GONE);
+        pBar.setVisibility(View.VISIBLE);
 //        String extstoragedir = Environment.getExternalStorageDirectory().toString();
 //        File fol = new File(extstoragedir, "pdf");
 //        File folder=new File(fol,"pdf");
@@ -2708,7 +2717,7 @@ public class DailyReportActivity extends AppCompatActivity {
             EditText sText = findViewById(R.id.eSafetyNotes);
             EditText vText = findViewById(R.id.eMiscNotes);
 
-            String p = pText.getText().toString();
+            final String p = pText.getText().toString();
             String t = tText.getText().toString();
             String i = iText.getText().toString();
             String b = bText.getText().toString();
@@ -2848,6 +2857,52 @@ public class DailyReportActivity extends AppCompatActivity {
             document.writeTo(fOut);
             document.close();
 
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+            String strName = p+" "+sdf.format(date)+".pdf";
+
+            Uri pdfFile = Uri.fromFile(new File(file.getAbsolutePath()));
+            final StorageReference reportRef = FirebaseStorage.getInstance().getReference().child("dailyReport/"+strName);
+            UploadTask uploadTask = reportRef.putFile(pdfFile);
+
+            final Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    // Continue with the task to get the download URL
+                   return reportRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        uploadFileURL(downloadUri.toString(), p);
+                    } else {
+                        openPolice();
+                    }
+
+                    Log.i("AHHH", task.getResult().toString());
+
+                }
+            });
+
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    openPolice();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                }
+            });
+
             Intent pdfViewIntent = new Intent(Intent.ACTION_VIEW);
             pdfViewIntent.setDataAndType(Uri.fromFile(file),"application/pdf");
             pdfViewIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -2867,6 +2922,7 @@ public class DailyReportActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(intent, "Choose PDF Viewer"));
             } catch (ActivityNotFoundException e) {
                 Log.i("AHHH", "PDF not viewable");
+                openPolice();
             }
 
         } catch (IOException e){
@@ -2879,9 +2935,41 @@ public class DailyReportActivity extends AppCompatActivity {
                         "Could not produce PDF", Toast.LENGTH_LONG).show();
                 Log.i("error", e.getLocalizedMessage());
             }
-        }
 
-        openPolice();
+            openPolice();
+        }
+    }
+
+    private void uploadFileURL(String url, final String p) {
+        Bundle extras = getIntent().getExtras();
+        String uid = FirebaseAuth.getInstance().getUid();
+        final String fName = extras.getString("fName", "");
+        final String lName = extras.getString("lName", "");
+
+        DatabaseReference fRef = FirebaseDatabase.getInstance().getReference("Reports");
+        final DatabaseReference ref = fRef.child(date).child(time).child(uid);
+
+        ref.child("pdf").setValue(url).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                ref.child("firstName").setValue(fName).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        ref.child("lastName").setValue(lName).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                ref.child("poNum").setValue(p).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        openPolice();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
     }
 
     private int convertWidth(Bitmap b, int x) {

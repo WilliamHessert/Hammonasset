@@ -6,11 +6,12 @@ package com.hammollc.hammonasset;
 
 public class Block {
 
-    private String type;
+    private String type, classification;
     private int hours;
 
-    public Block(String type, int hours) {
+    public Block(String type, String classification, int hours) {
         this.type = type;
+        this.classification = classification;
         this.hours = hours;
     }
 
@@ -19,6 +20,10 @@ public class Block {
     }
 
     public String getType() { return type; }
+
+    public String getClassification() {
+        return classification;
+    }
 
     public int getHours() { return hours; }
 }

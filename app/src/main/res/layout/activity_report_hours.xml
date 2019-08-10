@@ -9,7 +9,8 @@
     <RelativeLayout
         android:id="@+id/dateTimeView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <Button
             android:id="@+id/dayBtn"
@@ -157,5 +158,5 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_centerInParent="true"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 </RelativeLayout>

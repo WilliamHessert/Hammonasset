@@ -303,6 +303,7 @@ public class CrewHistory extends AppCompatActivity {
                             String eTime = dataSnapshot.child("eTime").getValue(String.class);
                             String tHours = dataSnapshot.child("tHours").getValue(Integer.class) + "";
                             String app = dataSnapshot.child("approved").getValue(String.class);
+                            String clss = dataSnapshot.child("classification").getValue(String.class);
 
                             ArrayList<Block> blocks = new ArrayList<>();
                             int bCount = (int) (dataSnapshot.child("blocks").getChildrenCount());
@@ -312,7 +313,7 @@ public class CrewHistory extends AppCompatActivity {
                                         .child(j+"").child("type").getValue(String.class);
                                 int hours = dataSnapshot.child("blocks")
                                         .child(j+"").child("hours").getValue(Integer.class);
-                                blocks.add(new Block(type, hours));
+                                blocks.add(new Block(type, clss, hours));
                             }
 
                             boolean reported;

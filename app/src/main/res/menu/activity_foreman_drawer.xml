@@ -36,6 +36,11 @@
                     android:id="@+id/nav_receipts"
                     android:icon="@drawable/ic_attach_money_black_24dp"
                     android:title="Upload Receipt" />
+
+                <item
+                    android:id="@+id/nav_vehicle"
+                    android:icon="@drawable/ic_local_shipping_black_24dp"
+                    android:title="Vehicle" />
             </menu>
         </item>
     </group>

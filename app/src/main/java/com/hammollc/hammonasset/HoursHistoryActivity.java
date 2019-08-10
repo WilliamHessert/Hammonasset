@@ -26,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +91,10 @@ public class HoursHistoryActivity extends AppCompatActivity {
         list = findViewById(R.id.historyList);
         pBar = findViewById(R.id.historyProgress);
         detailHolder = findViewById(R.id.historyDetailHolder);
+
+        list.setVisibility(View.GONE);
+        detailHolder.setVisibility(View.GONE);
+        pBar.setVisibility(View.VISIBLE);
 
         wAdapter = new ArrayAdapter<String>(
                 HoursHistoryActivity.this, android.R.layout.simple_list_item_1, weeks);
@@ -186,8 +191,9 @@ public class HoursHistoryActivity extends AppCompatActivity {
                         }
                     }
                 }
-            }
 
+                orderWeeks();
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -216,6 +222,16 @@ public class HoursHistoryActivity extends AppCompatActivity {
             weekToTimes.get(week).add(time);
 
         wAdapter.notifyDataSetChanged();
+    }
+
+    private void orderWeeks() {
+        Collections.sort(weeks);
+
+        for(int i=0; i<weeks.size(); i++) {
+            weeks.set(i, "Week of "+weeks.get(i));
+        }
+
+        showFullView();
     }
 
     private void showFullView() {

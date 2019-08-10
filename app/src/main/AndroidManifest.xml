@@ -53,7 +53,8 @@
         <activity android:name=".LicenseActivity" />
         <activity android:name=".MedicalCertificateActivity" />
         <activity android:name=".OshaCardActivity" />
-        <activity android:name=".ReceiptActivity"></activity>
+        <activity android:name=".ReceiptActivity" />
+        <activity android:name=".VehicleActivity"></activity>
     </application>
 
 </manifest>
