@@ -206,7 +206,9 @@ public class ReportHours extends AppCompatActivity {
                 mDatePicker = new DatePickerDialog(ReportHours.this, new DatePickerDialog.OnDateSetListener() {
                     public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
                         selectedmonth = selectedmonth + 1;
-                        dText.setText("" + selectedmonth + "/" + selectedday + "/" + selectedyear);
+                        String dString = ""+selectedmonth+"/"+selectedday+"/"+selectedyear;
+
+                        dText.setText(dString);
                         Calendar c = Calendar.getInstance();
 
                         c.set(Calendar.MONTH, selectedmonth-1);
@@ -1047,12 +1049,15 @@ public class ReportHours extends AppCompatActivity {
     private String formatDate(String date) {
         String[] comps = date.split("-");
         String m = comps[0];
+        String d = comps[1];
 
-        if(m.length() == 1) {
+        if(m.length() == 1)
             m = "0"+m;
-        }
 
-        return m+"-"+comps[1]+"-"+comps[2];
+        if(d.length() == 1)
+            d = "0"+d;
+
+        return m+"-"+d+"-"+comps[2];
     }
 
     private String getDayString() {

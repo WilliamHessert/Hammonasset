@@ -68,10 +68,11 @@ public class ProcessorActivity extends AppCompatActivity {
     }
 
     private void handleType(String t) {
-        if(t.equals("Laborer"))
-            openLaborer();
-        else
-            handleForeman();
+        handleForeman(t);
+//        if(t.equals("Laborer"))
+//            openLaborer();
+//        else
+//            handleForeman();
     }
 
     private void openLaborer() {
@@ -80,7 +81,7 @@ public class ProcessorActivity extends AppCompatActivity {
         ProcessorActivity.this.finish();
     }
 
-    private void handleForeman() {
+    private void handleForeman(final String type) {
         final DatabaseReference ref =
                 FirebaseDatabase.getInstance().getReference("Users").child(uid).child("info");
         ref.child("fName").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -91,7 +92,7 @@ public class ProcessorActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         setLastName(dataSnapshot.getValue(String.class));
-                        openForeman();
+                        openForeman(type);
                     }
 
                     @Override
@@ -112,14 +113,14 @@ public class ProcessorActivity extends AppCompatActivity {
         this.lName = lName;
     }
 
-    private void openForeman() {
+    private void openForeman(String type) {
         Intent i = new Intent(ProcessorActivity.this, ForemanActivity.class);
         i.putExtra("uid", uid);
 
         i.putExtra("fName", fName);
         i.putExtra("lName", lName);
         i.putExtra("email", email);
-        i.putExtra("type", "Foreman");
+        i.putExtra("type", type);
 
         ProcessorActivity.this.startActivity(i);
         ProcessorActivity.this.finish();

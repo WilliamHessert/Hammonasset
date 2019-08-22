@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:title="Foreman">
+            <menu>
+                <item
+                    android:id="@+id/nav_crew"
+                    android:icon="@drawable/crew"
+                    android:title="Create New Work Order" />
+                <item
+                    android:id="@+id/nav_orders"
+                    android:icon="@drawable/approve"
+                    android:title="My Work Orders" />
+                <item
+                    android:id="@+id/nav_receipts"
+                    android:icon="@drawable/ic_attach_money_black_24dp"
+                    android:title="Upload Crew Receipt" />
+            </menu>
+        </item>
+    </group>
+</menu>

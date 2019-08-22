@@ -75,43 +75,27 @@ public class CrewActivity extends AppCompatActivity {
         this.pBar.setVisibility(View.VISIBLE);
         this.pField.setVisibility(View.GONE);
         this.dField.setVisibility(View.GONE);
-        downloadPoNumsNum();
+        downloadPoNums();
     }
 
-    private void downloadPoNumsNum() {
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Contracts").child("16PSX0176").child("poNums");
-        ref.child("number").addListenerForSingleValueEvent(new ValueEventListener() {
+    private void downloadPoNums() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("poNums");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                CrewActivity.this.downloadPoNums(Integer.parseInt(dataSnapshot.getValue(String.class)), ref);
-            }
+                ArrayList<String> poNums = new ArrayList<>();
 
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void downloadPoNums(final int num, DatabaseReference ref) {
-        final ArrayList<String> poNums = new ArrayList();
-        ref.addChildEventListener(new ChildEventListener() {
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (!dataSnapshot.getKey().equals("number")) {
-                    poNums.add(dataSnapshot.getKey());
-                    if (num == poNums.size()) {
-                        CrewActivity.this.openInitView(poNums);
-                    }
+                for(DataSnapshot poNumData: dataSnapshot.getChildren()) {
+                   poNums.add(poNumData.getValue(String.class));
                 }
+
+                openInitView(poNums);
             }
 
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            }
-
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
+            @Override
             public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
@@ -127,13 +111,12 @@ public class CrewActivity extends AppCompatActivity {
     }
 
     private void openInitView(final ArrayList<String> poNums) {
-        this.pBar.setVisibility(View.GONE);
-        this.pField.setVisibility(View.VISIBLE);
-        this.dField.setVisibility(View.VISIBLE);
+        pBar.setVisibility(View.GONE);
+        pField.setVisibility(View.VISIBLE);
+        dField.setVisibility(View.VISIBLE);
 
-
-        final EditText dText = this.dField;
-        final EditText pNum = this.pField;
+        final EditText dText = dField;
+        final EditText pNum = pField;
         Calendar mcurrentDate = Calendar.getInstance();
         final int mYear = mcurrentDate.get(Calendar.YEAR);
         final int mMonth = mcurrentDate.get(Calendar.MONTH);
@@ -195,22 +178,22 @@ public class CrewActivity extends AppCompatActivity {
         n.setEnabled(false);
         d.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                CrewActivity.this.searchForExistingCrew("day");
-                d.setBackground(CrewActivity.this.getDrawable(R.drawable.box_filled));
+                searchForExistingCrew("day");
+                d.setBackground(getDrawable(R.drawable.box_filled));
                 d.setTextColor(-1);
-                n.setBackground(CrewActivity.this.getDrawable(R.drawable.box));
-                n.setTextColor(CrewActivity.this.getResources().getColor(R.color.colorPrimary));
-                CrewActivity.this.day = true;
+                n.setBackground(getDrawable(R.drawable.box));
+                n.setTextColor(getResources().getColor(R.color.colorPrimary));
+                day = true;
             }
         });
         n.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                CrewActivity.this.searchForExistingCrew("night");
-                n.setBackground(CrewActivity.this.getDrawable(R.drawable.box_filled));
+                searchForExistingCrew("night");
+                n.setBackground(getDrawable(R.drawable.box_filled));
                 n.setTextColor(-1);
-                d.setBackground(CrewActivity.this.getDrawable(R.drawable.box));
-                d.setTextColor(CrewActivity.this.getResources().getColor(R.color.colorPrimary));
-                CrewActivity.this.day = false;
+                d.setBackground(getDrawable(R.drawable.box));
+                d.setTextColor(getResources().getColor(R.color.colorPrimary));
+                day = false;
             }
         });
         Builder builder = new Builder(this);
@@ -251,9 +234,9 @@ public class CrewActivity extends AppCompatActivity {
         ref.child("num").addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
-                    CrewActivity.this.getEmpNum(ref);
+                    getEmpNum(ref);
                 } else {
-                    CrewActivity.this.loadExistingCrew(ref, (String) dataSnapshot.getValue(String.class));
+                    loadExistingCrew(ref, (String) dataSnapshot.getValue(String.class));
                 }
             }
 
@@ -269,7 +252,7 @@ public class CrewActivity extends AppCompatActivity {
         }
         ref.addChildEventListener(new ChildEventListener() {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                CrewActivity.this.addCrewman(dataSnapshot, ref);
+                addCrewman(dataSnapshot, ref);
             }
 
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
@@ -312,9 +295,9 @@ public class CrewActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference("activeNum").addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int empNum = Integer.parseInt((String) dataSnapshot.getValue(String.class));
-                CrewActivity.this.setEmpNum(empNum);
+                setEmpNum(empNum);
                 Log.i("AHHH", empNum + "");
-                CrewActivity.this.getEmployees(ref);
+                getEmployees(ref);
             }
 
             public void onCancelled(DatabaseError databaseError) {
@@ -327,16 +310,16 @@ public class CrewActivity extends AppCompatActivity {
     }
 
     private void getEmployees(final DatabaseReference ref) {
-        this.eData = new ArrayList();
-        this.eNames = new ArrayList();
+        eData = new ArrayList<>();
+        eNames = new ArrayList<>();
         FirebaseDatabase.getInstance().getReference("Users").addChildEventListener(new ChildEventListener() {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String key = dataSnapshot.getKey();
-//                if (key.length() > 20 && !key.equals(CrewActivity.this.uid)) {
-//                    CrewActivity.this.addEmp(dataSnapshot, ref);
+//                if (key.length() > 20 && !key.equals(uid)) {
+//                    addEmp(dataSnapshot, ref);
 //                }
-                if (!key.equals(CrewActivity.this.uid)) {
-                    CrewActivity.this.addEmp(dataSnapshot, ref);
+                if (!key.equals(uid)) {
+                    addEmp(dataSnapshot, ref);
                 }
             }
 
@@ -352,12 +335,13 @@ public class CrewActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+
         openEmployeeDialog(ref);
     }
 
     private void addEmp(DataSnapshot data, DatabaseReference ref) {
-        String lName = (String) data.child("info").child("lName").getValue(String.class);
-        String name = ((String) data.child("info").child("fName").getValue(String.class)) + " " + lName;
+        String lName = data.child("info").child("lName").getValue(String.class);
+        String name = data.child("info").child("fName").getValue(String.class) + " " + lName;
         this.eData.add(data);
         this.eNames.add(name);
         if (this.eNames.size() == this.eNum) {
@@ -372,9 +356,9 @@ public class CrewActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String key = dataSnapshot.getKey();
                 if (key.equals("number")) {
-                    CrewActivity.this.setCnum(key, ref);
+                    setCnum(key, ref);
                 } else {
-                    CrewActivity.this.handleDefaultCrew(dataSnapshot, ref);
+                    handleDefaultCrew(dataSnapshot, ref);
                 }
             }
 
@@ -409,39 +393,43 @@ public class CrewActivity extends AppCompatActivity {
     }
 
     private void openEmployeeDialog(final DatabaseReference ref) {
-        this.pField.setVisibility(View.GONE);
-        this.dField.setVisibility(View.GONE);
-        this.pBar.setVisibility(View.GONE);
+        pField.setVisibility(View.GONE);
+        dField.setVisibility(View.GONE);
+        pBar.setVisibility(View.GONE);
+
         ((RelativeLayout) findViewById(R.id.dayNigHolder)).setVisibility(View.GONE);
         ((RelativeLayout) findViewById(R.id.selectCrewView)).setVisibility(View.VISIBLE);
-        ListView lView = (ListView) findViewById(R.id.addEmpList);
+
+        ListView lView = findViewById(R.id.addEmpList);
         final ArrayAdapter<String> ad = new ArrayAdapter(this, android.R.layout.simple_list_item_1, this.addedEmps);
         lView.setAdapter(ad);
+
         this.copyCount = 0;
         final ArrayList<String> empCopy = new ArrayList();
         final ArrayList<String> unchangedCopy = new ArrayList();
         ((Button) findViewById(R.id.addEmpBtn)).setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                if (CrewActivity.this.copyCount == 0 || CrewActivity.this.copyCount != CrewActivity.this.eNames.size()) {
+                if (copyCount == 0 || copyCount != eNames.size()) {
                     empCopy.clear();
                     unchangedCopy.clear();
-                    for (int i = 0; i < CrewActivity.this.eNames.size(); i++) {
-                        String eName = (String) CrewActivity.this.eNames.get(i);
+                    for (int i = 0; i < eNames.size(); i++) {
+                        String eName = (String) eNames.get(i);
                         empCopy.add(eName);
                         unchangedCopy.add(eName);
                     }
-                    CrewActivity.this.updateCopyCount(unchangedCopy.size());
+                    updateCopyCount(unchangedCopy.size());
                 }
                 final Dialog dialog = new Dialog(CrewActivity.this);
                 dialog.requestWindowFeature(1);
                 dialog.setCancelable(false);
                 dialog.setContentView(R.layout.dialog_employee_view);
+
                 ListView empList = (ListView) dialog.findViewById(R.id.viewAllEmps);
                 empList.setAdapter(new ArrayAdapter(CrewActivity.this, android.R.layout.simple_list_item_1, empCopy));
                 empList.setOnItemClickListener(new OnItemClickListener() {
                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                        CrewActivity.this.eIndeces.add(Integer.valueOf(unchangedCopy.indexOf(empCopy.get(position))));
-                        CrewActivity.this.addedEmps.add(empCopy.get(position));
+                        eIndeces.add(Integer.valueOf(unchangedCopy.indexOf(empCopy.get(position))));
+                        addedEmps.add(empCopy.get(position));
                         ad.notifyDataSetChanged();
                         dialog.dismiss();
                         empCopy.remove(position);
@@ -490,9 +478,9 @@ public class CrewActivity extends AppCompatActivity {
                 builder.setMessage("Are you sure you want to remove this employee from the crew?");
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        empCopy.add(((Integer) CrewActivity.this.eIndeces.get(position)).intValue(), (String) CrewActivity.this.addedEmps.get(position));
-                        CrewActivity.this.eIndeces.remove(position);
-                        CrewActivity.this.addedEmps.remove(position);
+                        empCopy.add(((Integer) eIndeces.get(position)).intValue(), (String) addedEmps.get(position));
+                        eIndeces.remove(position);
+                        addedEmps.remove(position);
                         ad.notifyDataSetChanged();
                         dialog.dismiss();
                     }
@@ -509,7 +497,7 @@ public class CrewActivity extends AppCompatActivity {
                 }
 
                 public void onClick(DialogInterface dialog, int which) {
-                    CrewActivity.this.getCrewIds(ref);
+                    getCrewIds(ref);
                     dialog.dismiss();
                 }
             }
@@ -561,7 +549,8 @@ public class CrewActivity extends AppCompatActivity {
         DatabaseReference vRef = FirebaseDatabase.getInstance().getReference("Users");
         String uid = FirebaseAuth.getInstance().getUid();
         String dString = "night";
-        if (this.day) {
+
+        if (day) {
             dString = "day";
         }
         final DatabaseReference ref = vRef.child(uid).child("crews").child(mondayDate).child(newDate).child(dString);
@@ -576,9 +565,9 @@ public class CrewActivity extends AppCompatActivity {
 
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            CrewActivity.this.checkIfContinue(names.size());
+                            checkIfContinue(names.size());
                         } else {
-                            CrewActivity.this.displayError("Error creating crew, please contact the system admin");
+                            displayError("Error creating crew, please contact the system admin");
                         }
                     }
                 }
@@ -616,9 +605,9 @@ public class CrewActivity extends AppCompatActivity {
             ref.child((String) this.crewIds.get(i)).child("hours").child(mondayDate).child(newDate).child(dString).child("foreman").setValue(this.uid).addOnCompleteListener(new OnCompleteListener<Void>() {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        CrewActivity.this.addDataToPoNumber(mondayDate, newDate);
+                        addDataToPoNumber(mondayDate, newDate);
                     } else {
-                        CrewActivity.this.displayError("Error uploading data, please contact the system admin");
+                        displayError("Error uploading data, please contact the system admin");
                     }
                 }
             });
@@ -626,7 +615,12 @@ public class CrewActivity extends AppCompatActivity {
     }
 
     private void addDataToPoNumber(String mDate, String nDate) {
-        addCrewmanToPoNumber(0, FirebaseDatabase.getInstance().getReference("Contracts").child("16PSX0176").child("poNums").child(this.pField.getText().toString()).child("crews").child(mDate).child(nDate), mDate, nDate);
+        String dString = "night";
+
+        if(day)
+            dString = "day";
+
+        addCrewmanToPoNumber(0, FirebaseDatabase.getInstance().getReference("Contracts").child("16PSX0176").child("poNums").child(this.pField.getText().toString()).child("crews").child(mDate).child(nDate).child(dString).child(uid), mDate, nDate);
     }
 
     private void addCrewmanToPoNumber(int i, DatabaseReference ref, String mDate, String nDate) {
@@ -640,7 +634,7 @@ public class CrewActivity extends AppCompatActivity {
         final String str2 = nDate;
         ref.child("" + i).setValue((String) this.crewIds.get(i)).addOnCompleteListener(new OnCompleteListener<Void>() {
             public void onComplete(@NonNull Task<Void> task) {
-                CrewActivity.this.addCrewmanToPoNumber(i2 + 1, databaseReference, str, str2);
+                addCrewmanToPoNumber(i2 + 1, databaseReference, str, str2);
             }
         });
     }
@@ -662,7 +656,7 @@ public class CrewActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getUid()).child("crews").child(mDate).child(nDate).child(dString).child("poNumber").setValue(poNumber).addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
-                                CrewActivity.this.createDefaultCrewDialog(nDate);
+                                createDefaultCrewDialog(nDate);
                             }
                         });
                     }
@@ -681,13 +675,13 @@ public class CrewActivity extends AppCompatActivity {
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    CrewActivity.this.getDefaultCrewName(nDate);
+                    getDefaultCrewName(nDate);
                 }
             });
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    CrewActivity.this.finish();
+                    finish();
                 }
             });
             builder.create().show();
@@ -703,7 +697,7 @@ public class CrewActivity extends AppCompatActivity {
         builder.setView(input);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                CrewActivity.this.createDefaultCrew(input.getText().toString(), nDate);
+                createDefaultCrew(input.getText().toString(), nDate);
                 dialog.dismiss();
             }
         });
@@ -725,9 +719,9 @@ public class CrewActivity extends AppCompatActivity {
                 ref.child(i + "").setValue(id).addOnCompleteListener(new OnCompleteListener<Void>() {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            CrewActivity.this.checkCanClose(ref, nam);
+                            checkCanClose(ref, nam);
                         } else {
-                            CrewActivity.this.displayError("Error Saving Default Crew");
+                            displayError("Error Saving Default Crew");
                         }
                     }
                 });
@@ -748,21 +742,21 @@ public class CrewActivity extends AppCompatActivity {
 
                     public void onComplete(@NonNull Task<Void> task) {
                         Toast.makeText(CrewActivity.this, "Success!", Toast.LENGTH_LONG).show();
-                        CrewActivity.this.finish();
+                        finish();
                     }
                 }
 
                 public void onComplete(@NonNull Task<Void> task) {
-                    FirebaseDatabase.getInstance().getReference("Users").child(CrewActivity.this.uid).child("defaultCrews").child("number").setValue(Integer.valueOf(CrewActivity.this.cNum)).addOnCompleteListener(new C05151());
+                    FirebaseDatabase.getInstance().getReference("Users").child(uid).child("defaultCrews").child("number").setValue(Integer.valueOf(cNum)).addOnCompleteListener(new C05151());
                 }
             });
         }
     }
 
     private String reformatDate() {
-        String y = this.date.substring(0, 4);
-        String m = this.date.substring(4, 6);
-        return m + "-" + this.date.substring(6) + "-" + y;
+        String y = date.substring(0, 4);
+        String m = date.substring(4, 6);
+        return m+"-"+date.substring(6)+"-"+y;
     }
 
     private String getMonday(String nDate) {

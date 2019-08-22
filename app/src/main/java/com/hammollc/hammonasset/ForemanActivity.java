@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
+import android.view.SubMenu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -57,9 +59,18 @@ public class ForemanActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        foreman = false;
+
+        Bundle args = getIntent().getExtras();
+        String type = args.getString("type", "");
+
+        if(type.equals("Foreman") || type.equals("Admin") || type.equals("Supervisor")) {
+            foreman = true;
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_foreman);
-        uid = getIntent().getStringExtra("uid");
+        uid = args.getString("uid");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Hammonasset");
@@ -99,15 +110,9 @@ public class ForemanActivity extends AppCompatActivity
         hView = findViewById(R.id.hourView);
         hView.setVisibility(View.GONE);
 
-        foreman = false;
+
         noNotices = true;
         supervisor = false;
-
-        Bundle args = getIntent().getExtras();
-        String type = args.getString("type", "");
-
-        if(type.equals("Foreman"))
-            foreman = true;
 
         pInfo = false;
         eInfo = false;
@@ -704,6 +709,10 @@ public class ForemanActivity extends AppCompatActivity
         em.setText(email);
 
         displaySelectedScreen(R.id.nav_home);
+        Log.i("AHHH", foreman+"");
+        if(foreman) {
+            getMenuInflater().inflate(R.menu.foreman_submenu, nView.getMenu());
+        }
     }
 
     private void setHourView() {
@@ -908,6 +917,18 @@ public class ForemanActivity extends AppCompatActivity
             case R.id.nav_pHours:
                 openHours();
                 break;
+            case R.id.nav_drive:
+                openDriveActivity();
+                break;
+            case R.id.nav_vehicle_receipt:
+                openVehicleReceiptActivity();
+                break;
+            case R.id.nav_maintenance:
+                openMaintenanceActivity();
+                break;
+            case R.id.nav_accident:
+                openAccidentActivity();
+                break;
             case R.id.nav_crew:
                 openCrewActivity();
                 break;
@@ -947,6 +968,42 @@ public class ForemanActivity extends AppCompatActivity
 
         list.setVisibility(View.GONE);
         hView.setVisibility(View.VISIBLE);
+    }
+
+    private void openDriveActivity() {
+        Intent i = new Intent(ForemanActivity.this, DriveActivity.class);
+        i.putExtra("uid", uid);
+        i.putExtra("fName", fName);
+        i.putExtra("lName", lName);
+
+        ForemanActivity.this.startActivity(i);
+    }
+
+    private void openVehicleReceiptActivity() {
+        Intent i = new Intent(ForemanActivity.this, VehicleReceiptActivity.class);
+        i.putExtra("uid", uid);
+        i.putExtra("fName", fName);
+        i.putExtra("lName", lName);
+
+        ForemanActivity.this.startActivity(i);
+    }
+
+    private void openMaintenanceActivity() {
+        Intent i = new Intent(ForemanActivity.this, MaintenanceActivity.class);
+        i.putExtra("uid", uid);
+        i.putExtra("fName", fName);
+        i.putExtra("lName", lName);
+
+        ForemanActivity.this.startActivity(i);
+    }
+
+    private void openAccidentActivity() {
+        Intent i = new Intent(ForemanActivity.this, AccidentActivity.class);
+        i.putExtra("uid", uid);
+        i.putExtra("fName", fName);
+        i.putExtra("lName", lName);
+
+        ForemanActivity.this.startActivity(i);
     }
 
     private void openCrewActivity() {

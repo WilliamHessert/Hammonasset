@@ -22,26 +22,43 @@
             </menu>
         </item>
 
-        <item android:title="Group">
+        <item android:title="Vehicle">
             <menu>
                 <item
-                    android:id="@+id/nav_crew"
-                    android:icon="@drawable/crew"
-                    android:title="Create New Work Order" />
+                    android:id="@+id/nav_drive"
+                    android:icon="@drawable/ic_local_shipping_black_24dp"
+                    android:title="Log a Drive" />
                 <item
-                    android:id="@+id/nav_orders"
-                    android:icon="@drawable/approve"
-                    android:title="My Work Orders" />
+                    android:id="@+id/nav_vehicle_receipt"
+                    android:icon="@drawable/ic_receipt_black_24dp"
+                    android:title="Upload Vehicle Receipt" />
                 <item
-                    android:id="@+id/nav_receipts"
-                    android:icon="@drawable/ic_attach_money_black_24dp"
-                    android:title="Upload Receipt" />
+                    android:id="@+id/nav_maintenance"
+                    android:icon="@drawable/ic_build_black_24dp"
+                    android:title="Log Maintenance" />
 
                 <item
-                    android:id="@+id/nav_vehicle"
-                    android:icon="@drawable/ic_local_shipping_black_24dp"
-                    android:title="Vehicle" />
+                    android:id="@+id/nav_accident"
+                    android:icon="@drawable/ic_warning_black_24dp"
+                    android:title="Report an Accident" />
             </menu>
         </item>
+
+        <!--<item android:title="Foreman">-->
+            <!--<menu>-->
+                <!--<item-->
+                    <!--android:id="@+id/nav_crew"-->
+                    <!--android:icon="@drawable/crew"-->
+                    <!--android:title="Create New Work Order" />-->
+                <!--<item-->
+                    <!--android:id="@+id/nav_orders"-->
+                    <!--android:icon="@drawable/approve"-->
+                    <!--android:title="My Work Orders" />-->
+                <!--<item-->
+                    <!--android:id="@+id/nav_receipts"-->
+                    <!--android:icon="@drawable/ic_attach_money_black_24dp"-->
+                    <!--android:title="Upload Receipt" />-->
+            <!--</menu>-->
+        <!--</item>-->
     </group>
 </menu>
