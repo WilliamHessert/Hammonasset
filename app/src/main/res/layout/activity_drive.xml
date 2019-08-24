@@ -41,5 +41,74 @@
             android:hint="Vehicle"
             android:layout_below="@id/driveNameField"/>
 
+        <EditText
+            android:id="@+id/driveDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:focusable="false"
+            android:inputType="none"
+            android:hint="Date of Drive"
+            android:layout_below="@id/driveVehicleField"/>
+
+        <EditText
+            android:id="@+id/driveLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:hint="Where did you drive?"
+            android:inputType="text"
+            android:layout_below="@id/driveDate"/>
+
+        <EditText
+            android:id="@+id/driveReason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:hint="Reason for drive"
+            android:inputType="text"
+            android:layout_below="@id/driveLocation"/>
+
+        <EditText
+            android:id="@+id/driveMileage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:hint="Drive Mileage"
+            android:inputType="number"
+            android:layout_below="@id/driveReason"/>
+
+        <EditText
+            android:id="@+id/driveNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:hint="Notes (optional)"
+            android:inputType="text|textMultiLine"
+            android:lines="5"
+            android:gravity="start|top"
+            android:background="@drawable/box"
+            android:layout_below="@id/driveMileage"
+            android:padding="5dp"/>
+
+        <Button
+            android:id="@+id/driveSubmitBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            android:background="@color/colorPrimary"
+            android:text="Submit"
+            android:textColor="#fff" />
+
     </RelativeLayout>
 </RelativeLayout>

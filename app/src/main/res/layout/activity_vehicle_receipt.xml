@@ -41,5 +41,118 @@
             android:hint="Vehicle"
             android:layout_below="@id/vehicleNameField"/>
 
+        <EditText
+            android:id="@+id/vehicleReceiptDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:focusable="false"
+            android:inputType="none"
+            android:hint="Date of Purchase"
+            android:layout_below="@id/vehicleVehicleField"/>
+
+        <EditText
+            android:id="@+id/vehicleReceiptCost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:hint="Cost of Purchase ($)"
+            android:inputType="number"
+            android:layout_below="@id/vehicleReceiptDate"/>
+
+        <CheckBox
+            android:id="@+id/vehicleFuelCheckbox"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_below="@id/vehicleReceiptCost"/>
+
+        <TextView
+            android:id="@+id/vehicleFuelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/vehicleFuelCheckbox"
+            android:layout_toEndOf="@id/vehicleFuelCheckbox"
+            android:text="Fuel Purchase"
+            android:textColor="#000"
+            android:textSize="18sp"/>
+
+        <RelativeLayout
+            android:id="@+id/nonFuelPurchaseFieldsHolder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/vehicleFuelCheckbox"
+            android:layout_margin="20dp">
+
+            <EditText
+                android:id="@+id/vehicleReceiptItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:hint="What was Purchased?"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/vehicleReceiptReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:hint="Reason for Purchase"
+                android:inputType="text"
+                android:layout_below="@id/vehicleReceiptItem"/>
+
+            <EditText
+                android:id="@+id/vehicleReceiptApprover"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:hint="Who Approved Purchase?"
+                android:inputType="text"
+                android:layout_below="@id/vehicleReceiptReason"/>
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/vehicleReceiptUploadBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:text="Upload Image"
+            android:textColor="#fff"
+            android:layout_below="@id/nonFuelPurchaseFieldsHolder"
+            android:layout_marginStart="20dp"
+            android:layout_margin="10dp"
+            android:layout_alignParentStart="true"/>
+
+        <Button
+            android:id="@+id/vehicleReceiptSubmitBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            android:background="@color/colorPrimary"
+            android:text="Submit"
+            android:textColor="#fff" />
+
+        <ImageView
+            android:id="@+id/vehicleReceiptImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/vehicleReceiptUploadBtn"
+            android:layout_above="@id/vehicleReceiptSubmitBtn"
+            android:orientation="vertical" />
+
     </RelativeLayout>
 </RelativeLayout>

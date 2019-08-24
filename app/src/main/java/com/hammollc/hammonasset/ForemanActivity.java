@@ -709,7 +709,7 @@ public class ForemanActivity extends AppCompatActivity
         em.setText(email);
 
         displaySelectedScreen(R.id.nav_home);
-        Log.i("AHHH", foreman+"");
+
         if(foreman) {
             getMenuInflater().inflate(R.menu.foreman_submenu, nView.getMenu());
         }

@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,10 +38,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class ReceiptActivity extends AppCompatActivity {
@@ -53,6 +58,7 @@ public class ReceiptActivity extends AppCompatActivity {
 
     private ImageView rImage;
     private String encodedString = "";
+    private String mCameraFileName = "";
 
     private FirebaseDatabase db;
     private ArrayList<String> poNumbers;
@@ -131,7 +137,21 @@ public class ReceiptActivity extends AppCompatActivity {
                                     CAMERA_REQUEST);
                         }
                         else {
+                            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+                            StrictMode.setVmPolicy(builder.build());
+
                             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                            Date date = new Date();
+                            DateFormat df = new SimpleDateFormat("MM/dd/yyyy-mm-ss", Locale.US);
+
+                            String newPicFile = df.format(date) + ".jpg";
+                            String outPath = "/sdcard/" + newPicFile;
+                            File outFile = new File(outPath);
+
+                            mCameraFileName = outFile.toString();
+                            Uri outuri = Uri.fromFile(outFile);
+
+                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outuri);
                             startActivityForResult(cameraIntent, CAMERA_REQUEST);
                         }
                     }
@@ -298,13 +318,22 @@ public class ReceiptActivity extends AppCompatActivity {
         pBar.setVisibility(View.GONE);
 
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            try {
+                final Uri imageUri = Uri.fromFile(new File(mCameraFileName));
+                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
 
-            rImage.setImageBitmap(bitmap);
-            byte[] byteArray = byteArrayOutputStream .toByteArray();
-            encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+
+                rImage.setImageBitmap(bitmap);
+                byte[] byteArray = byteArrayOutputStream.toByteArray();
+                encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(ReceiptActivity.this,
+                        "Error loading image...", Toast.LENGTH_LONG).show();
+            }
         }
         else if (requestCode == RESULT_LOAD_IMG && resultCode == Activity.RESULT_OK) {
             try {
