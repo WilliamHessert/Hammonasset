@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DriverApplicationActivity">
+
+    <TextView
+        android:id="@+id/daProgressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0%"
+        android:textSize="24sp"
+        android:textColor="@color/colorPrimary"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:layout_alignParentTop="true"/>
+
+    <ProgressBar
+        android:id="@+id/daProgressBar"
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progressTint="@color/colorPrimary"
+        android:progressBackgroundTint="#a8a8a8"/>
+
+    <Button
+        android:id="@+id/daContBtn"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="Continue >"
+        android:textColor="#fff"
+        android:background="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"/>
+
+    <RelativeLayout
+        android:id="@+id/daInfoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn">
+
+        <LinearLayout
+            android:id="@+id/daNameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/daFirstName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".4"
+                android:hint="First Name*"
+                android:inputType="text"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_margin="10dp"/>
+
+            <EditText
+                android:id="@+id/daMiddleInitial"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".1"
+                android:hint="M.I."
+                android:inputType="text"
+                android:layout_marginTop="20dp"
+                android:layout_margin="10dp"/>
+
+            <EditText
+                android:id="@+id/daLastName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".4"
+                android:hint="Last Name*"
+                android:inputType="text"
+                android:layout_marginTop="20dp"
+                android:layout_margin="10dp"/>
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".1"
+                android:hint="Suffix"
+                android:inputType="text"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_margin="10dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/daAddressLayout"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/daAddressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn"
+        android:visibility="gone">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/daLicenseView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn"
+        android:visibility="gone">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/daExperienceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn"
+        android:visibility="gone">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/daAccidentView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn"
+        android:visibility="gone">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/daViolationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn"
+        android:visibility="gone">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/daSuspensionView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn"
+        android:visibility="gone">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/daEmploymentView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn"
+        android:visibility="gone">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/daEmploymentView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn"
+        android:visibility="gone">
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/daSignatureView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/daProgressBar"
+        android:layout_above="@id/daContBtn"
+        android:visibility="gone">
+    </RelativeLayout>
+</RelativeLayout>

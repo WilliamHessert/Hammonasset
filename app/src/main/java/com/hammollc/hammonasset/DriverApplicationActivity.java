@@ -1,0 +1,13 @@
+package com.hammollc.hammonasset;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+public class DriverApplicationActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_driver_application);
+    }
+}

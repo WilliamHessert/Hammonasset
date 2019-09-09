@@ -30,12 +30,18 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -46,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 
 public class ReceiptActivity extends AppCompatActivity {
 
@@ -57,6 +64,7 @@ public class ReceiptActivity extends AppCompatActivity {
     private Button uploadBtn, submitBtn;
 
     private ImageView rImage;
+    private Bitmap rBitmap = null;
     private String encodedString = "";
     private String mCameraFileName = "";
 
@@ -161,10 +169,22 @@ public class ReceiptActivity extends AppCompatActivity {
             }
         });
 
+        final EditText pNumText = findViewById(R.id.rPoNum);
+        final EditText itemText = findViewById(R.id.rPurchased);
+        final EditText dateText = findViewById(R.id.rDate);
+        final EditText amntText = findViewById(R.id.rAmount);
+        final EditText noteText = findViewById(R.id.rNotes);
+
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String pNum = pNumText.getText().toString();
+                String item = itemText.getText().toString();
+                String date = dateText.getText().toString();
+                String amnt = amntText.getText().toString();
+                String note = noteText.getText().toString();
 
+                validateFields(pNum, item, date, amnt, note);
             }
         });
 
@@ -305,17 +325,16 @@ public class ReceiptActivity extends AppCompatActivity {
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
             } else {
-                rView.setVisibility(View.VISIBLE);
                 pBar.setVisibility(View.GONE);
+                rView.setVisibility(View.VISIBLE);
                 Toast.makeText(this, "Storage Permission Denied", Toast.LENGTH_LONG).show();
             }
         }
     }
 
-
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
-        rView.setVisibility(View.VISIBLE);
         pBar.setVisibility(View.GONE);
+        rView.setVisibility(View.VISIBLE);
 
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             try {
@@ -326,7 +345,9 @@ public class ReceiptActivity extends AppCompatActivity {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
 
+                rBitmap = bitmap;
                 rImage.setImageBitmap(bitmap);
+
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
                 encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
             } catch (Exception e) {
@@ -344,7 +365,9 @@ public class ReceiptActivity extends AppCompatActivity {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
 
+                rBitmap = bitmap;
                 rImage.setImageBitmap(bitmap);
+
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
                 encodedString = Base64.encodeToString(byteArray, Base64.DEFAULT);
             } catch (Exception e) {
@@ -352,5 +375,129 @@ public class ReceiptActivity extends AppCompatActivity {
                         "Error loading image...", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void validateFields(String p, String i, String d, String a, String n) {
+        if(p.equals("") || i.equals("") || d.equals("") ||a.equals("")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ReceiptActivity.this);
+            builder.setTitle("Error");
+            builder.setMessage("Please enter all values before submitting");
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.create().show();
+            return;
+        }
+
+        uploadReceiptImage(p, i, d, a, n);
+    }
+
+    private void uploadReceiptImage(final String p, final String i,
+                                    final String d, final String a, final String n) {
+
+        rView.setVisibility(View.GONE);
+        pBar.setVisibility(View.VISIBLE);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        rBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        final String rid = generateId();
+        final StorageReference ref = FirebaseStorage
+                .getInstance().getReference().child("crewReceipts/"+d+"_"+p+"_"+rid+".jpg");
+
+        UploadTask uploadTask = ref.putBytes(data);
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return ref.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    uploadValues(rid, downloadUri.toString(), p, i, d, a, n);
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ReceiptActivity.this);
+                    builder.setTitle("Error");
+                    builder.setMessage("Could not upload receipt at this time. Please try again later");
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ReceiptActivity.this.finish();
+                        }
+                    });
+
+                    builder.create().show();
+                }
+            }
+        });
+    }
+
+    private void uploadValues(String rid, final String u, String p,
+                              final String i, String d, String a, final String n) {
+
+        final DatabaseReference ref = FirebaseDatabase
+                .getInstance().getReference("Receipts").child("16PSX0176").child(p).child(d).child(rid);
+
+        final String name = getIntent()
+                .getStringExtra("lName")+", "+getIntent().getStringExtra("fName");
+
+        ref.child("amount").setValue(a).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                ref.child("downloadURL").setValue(u).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        ref.child("purchasedItem").setValue(i).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                ref.child("notes").setValue(n).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        ref.child("purchaser").setValue(name).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                finishAndExit();
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    private void finishAndExit() {
+        Toast.makeText(ReceiptActivity.this, "Success!", Toast.LENGTH_LONG).show();
+        ReceiptActivity.this.finish();
+    }
+
+    private String generateId() {
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder idBuilder = new StringBuilder();
+        Random rnd = new Random();
+
+        while (idBuilder.length() < 20) {
+            int index = (int) (rnd.nextFloat() * chars.length());
+            idBuilder.append(chars.charAt(index));
+        }
+
+        return idBuilder.toString();
     }
 }

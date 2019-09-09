@@ -35,30 +35,39 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class CrewActivity extends AppCompatActivity {
+
     final ArrayList<String> addedEmps = new ArrayList();
     ArrayList<ArrayList<String>> cCrew;
     ArrayList<ArrayList<DataSnapshot>> cData;
     ArrayList<String> cNames;
+
     int cNum;
     int copyCount;
     private int count = 0;
+
     ArrayList<Crewman> crew;
     ArrayList<String> crewIds;
+
     EditText dField;
     String date;
     boolean day;
+
     ArrayList<DataSnapshot> eData;
     final ArrayList<Integer> eIndeces = new ArrayList();
     ArrayList<String> eNames;
+
     int eNum;
     int num;
+
     ProgressBar pBar;
     EditText pField;
+
     boolean setCnum;
     String time;
     String uid;
@@ -118,6 +127,7 @@ public class CrewActivity extends AppCompatActivity {
         final EditText dText = dField;
         final EditText pNum = pField;
         Calendar mcurrentDate = Calendar.getInstance();
+
         final int mYear = mcurrentDate.get(Calendar.YEAR);
         final int mMonth = mcurrentDate.get(Calendar.MONTH);
         final int mDay = mcurrentDate.get(Calendar.DATE);
@@ -172,8 +182,8 @@ public class CrewActivity extends AppCompatActivity {
     private void addBtnViews() {
         this.time = "";
         ((RelativeLayout) findViewById(R.id.dayNigHolder)).setVisibility(View.VISIBLE);
-        final Button d = (Button) findViewById(R.id.dBtn);
-        final Button n = (Button) findViewById(R.id.nBtn);
+        final Button d = findViewById(R.id.dBtn);
+        final Button n = findViewById(R.id.nBtn);
         d.setEnabled(false);
         n.setEnabled(false);
         d.setOnClickListener(new OnClickListener() {
@@ -186,6 +196,7 @@ public class CrewActivity extends AppCompatActivity {
                 day = true;
             }
         });
+
         n.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 searchForExistingCrew("night");
@@ -196,6 +207,7 @@ public class CrewActivity extends AppCompatActivity {
                 day = false;
             }
         });
+
         Builder builder = new Builder(this);
         builder.setTitle("Select");
         builder.setMessage("Please select whether this is a day crew or a night crew");
@@ -205,31 +217,36 @@ public class CrewActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
+
         builder.setNeutralButton("Day", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 d.performClick();
                 dialog.dismiss();
             }
         });
+
         builder.create().show();
     }
 
     private void setDate(int m, int d, int y) {
         String mString = m + "";
         String dString = d + "";
+
         if (m < 10) {
             mString = "0" + mString;
         }
         if (d < 10) {
             dString = "0" + dString;
         }
+
         this.date = y + "" + mString + "" + dString;
     }
 
     private void searchForExistingCrew(String time) {
-        this.pBar.setVisibility(View.VISIBLE);
-        this.dField.setOnClickListener(null);
-        this.pField.setOnClickListener(null);
+        pBar.setVisibility(View.VISIBLE);
+        dField.setOnClickListener(null);
+        pField.setOnClickListener(null);
+
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(this.uid).child("crews").child(this.date).child(time);
         ref.child("num").addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -296,7 +313,6 @@ public class CrewActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int empNum = Integer.parseInt((String) dataSnapshot.getValue(String.class));
                 setEmpNum(empNum);
-                Log.i("AHHH", empNum + "");
                 getEmployees(ref);
             }
 
@@ -312,6 +328,7 @@ public class CrewActivity extends AppCompatActivity {
     private void getEmployees(final DatabaseReference ref) {
         eData = new ArrayList<>();
         eNames = new ArrayList<>();
+
         FirebaseDatabase.getInstance().getReference("Users").addChildEventListener(new ChildEventListener() {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String key = dataSnapshot.getKey();
@@ -342,8 +359,12 @@ public class CrewActivity extends AppCompatActivity {
     private void addEmp(DataSnapshot data, DatabaseReference ref) {
         String lName = data.child("info").child("lName").getValue(String.class);
         String name = data.child("info").child("fName").getValue(String.class) + " " + lName;
-        this.eData.add(data);
-        this.eNames.add(name);
+        Log.i("AHHH", name);
+        eNames.add(name);
+        Collections.sort(eNames);
+        eData.add(eNames.indexOf(name), data);
+
+
         if (this.eNames.size() == this.eNum) {
             openEmployeeDialog(ref);
         }
@@ -351,10 +372,12 @@ public class CrewActivity extends AppCompatActivity {
 
     private void getDefaultCrews(final DatabaseReference ref) {
         DatabaseReference cRef = FirebaseDatabase.getInstance().getReference("Users").child("uid").child("defaultCrews");
-        this.setCnum = false;
+        setCnum = false;
+
         cRef.addChildEventListener(new ChildEventListener() {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String key = dataSnapshot.getKey();
+
                 if (key.equals("number")) {
                     setCnum(key, ref);
                 } else {
@@ -377,8 +400,8 @@ public class CrewActivity extends AppCompatActivity {
     }
 
     private void setCnum(String cString, DatabaseReference ref) {
-        this.cNum = Integer.parseInt(cString);
-        this.setCnum = true;
+        cNum = Integer.parseInt(cString);
+        setCnum = true;
         checkCanContinue(ref);
     }
 
@@ -390,6 +413,7 @@ public class CrewActivity extends AppCompatActivity {
     }
 
     private void checkCanContinue(DatabaseReference ref) {
+
     }
 
     private void openEmployeeDialog(final DatabaseReference ref) {
@@ -397,14 +421,14 @@ public class CrewActivity extends AppCompatActivity {
         dField.setVisibility(View.GONE);
         pBar.setVisibility(View.GONE);
 
-        ((RelativeLayout) findViewById(R.id.dayNigHolder)).setVisibility(View.GONE);
-        ((RelativeLayout) findViewById(R.id.selectCrewView)).setVisibility(View.VISIBLE);
+        (findViewById(R.id.dayNigHolder)).setVisibility(View.GONE);
+        (findViewById(R.id.selectCrewView)).setVisibility(View.VISIBLE);
 
         ListView lView = findViewById(R.id.addEmpList);
-        final ArrayAdapter<String> ad = new ArrayAdapter(this, android.R.layout.simple_list_item_1, this.addedEmps);
+        final ArrayAdapter<String> ad = new ArrayAdapter(this, android.R.layout.simple_list_item_1, addedEmps);
         lView.setAdapter(ad);
 
-        this.copyCount = 0;
+        copyCount = 0;
         final ArrayList<String> empCopy = new ArrayList();
         final ArrayList<String> unchangedCopy = new ArrayList();
         ((Button) findViewById(R.id.addEmpBtn)).setOnClickListener(new OnClickListener() {
@@ -435,7 +459,8 @@ public class CrewActivity extends AppCompatActivity {
                         empCopy.remove(position);
                     }
                 });
-                ((Button) dialog.findViewById(R.id.empCloseDialog)).setOnClickListener(new OnClickListener() {
+
+                (dialog.findViewById(R.id.empCloseDialog)).setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
                         dialog.dismiss();
                     }
@@ -443,7 +468,7 @@ public class CrewActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
-        ((Button) findViewById(R.id.addDefCrewBtn)).setOnClickListener(new OnClickListener() {
+        (findViewById(R.id.addDefCrewBtn)).setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(CrewActivity.this);
                 builder.setTitle("Coming Soon");
