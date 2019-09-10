@@ -58,7 +58,7 @@ public class CrewActivity extends AppCompatActivity {
     String date;
     boolean day;
 
-    ArrayList<DataSnapshot> eData;
+    ArrayList<String> eData;
     final ArrayList<Integer> eIndeces = new ArrayList();
     ArrayList<String> eNames;
 
@@ -251,7 +251,7 @@ public class CrewActivity extends AppCompatActivity {
         ref.child("num").addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
-                    getEmployees();
+                    getEmployees(ref);
                 } else {
                     loadExistingCrew(ref, (String) dataSnapshot.getValue(String.class));
                 }
@@ -266,7 +266,7 @@ public class CrewActivity extends AppCompatActivity {
         this.num = Integer.parseInt(nString);
 
         if (this.num <= 0) {
-            getEmployees();
+            getEmployees(ref);
         }
         ref.addChildEventListener(new ChildEventListener() {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -308,17 +308,23 @@ public class CrewActivity extends AppCompatActivity {
         });
     }
 
-    private void getEmployees() {
-        FirebaseDatabase.getInstance().getReference("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getEmployees(final DatabaseReference ref) {
+        eData = new ArrayList<>();
+        eNames = new ArrayList<>();
+
+        FirebaseDatabase.getInstance().getReference("employees").addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                    String lName = childDataSnapshot.child("info").child("lName").getValue(String.class);
-                    String name = childDataSnapshot.child("info").child("fName").getValue(String.class) + " " + lName;
+//                    String lName = childDataSnapshot.child("info").child("lName").getValue(String.class);
+//                    String name = childDataSnapshot.child("info").child("fName").getValue(String.class) + " " + lName;
+                    String name = childDataSnapshot.getValue(String.class);
                     Log.i("AHHH", name);
                     eNames.add(name);
                     Collections.sort(eNames);
-                    eData.add(eNames.indexOf(name), childDataSnapshot);
+                    eData.add(eNames.indexOf(name), childDataSnapshot.getKey());
                 }
+
+                openEmployeeDialog(ref);
             }
 
             public void onCancelled(DatabaseError databaseError) {
@@ -361,19 +367,19 @@ public class CrewActivity extends AppCompatActivity {
 //        openEmployeeDialog(ref);
 //    }
 
-    private void addEmp(DataSnapshot data, DatabaseReference ref) {
-        String lName = data.child("info").child("lName").getValue(String.class);
-        String name = data.child("info").child("fName").getValue(String.class) + " " + lName;
-        Log.i("AHHH", name);
-        eNames.add(name);
-        Collections.sort(eNames);
-        eData.add(eNames.indexOf(name), data);
-
-
-        if (this.eNames.size() == this.eNum) {
-            openEmployeeDialog(ref);
-        }
-    }
+//    private void addEmp(DataSnapshot data, DatabaseReference ref) {
+//        String lName = data.child("info").child("lName").getValue(String.class);
+//        String name = data.child("info").child("fName").getValue(String.class) + " " + lName;
+//        Log.i("AHHH", name);
+//        eNames.add(name);
+//        Collections.sort(eNames);
+//        eData.add(eNames.indexOf(name), data);
+//
+//
+//        if (this.eNames.size() == this.eNum) {
+//            openEmployeeDialog(ref);
+//        }
+//    }
 
     private void getDefaultCrews(final DatabaseReference ref) {
         DatabaseReference cRef = FirebaseDatabase.getInstance().getReference("Users").child("uid").child("defaultCrews");
@@ -437,7 +443,7 @@ public class CrewActivity extends AppCompatActivity {
         final ArrayList<String> empCopy = new ArrayList();
         final ArrayList<String> unchangedCopy = new ArrayList();
 
-        ((Button) findViewById(R.id.addEmpBtn)).setOnClickListener(new OnClickListener() {
+        (findViewById(R.id.addEmpBtn)).setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (copyCount == 0 || copyCount != eNames.size()) {
                     empCopy.clear();
@@ -517,12 +523,13 @@ public class CrewActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
+
                 builder.setNeutralButton("Cancel", new C03572());
                 builder.create().show();
             }
         });
 
-        ((Button) findViewById(R.id.createCrewBtn)).setOnClickListener(new OnClickListener() {
+        (findViewById(R.id.createCrewBtn)).setOnClickListener(new OnClickListener() {
 
             /* renamed from: com.hammollc.hammonasset.CrewActivity$19$1 */
             class C03581 implements DialogInterface.OnClickListener {
@@ -569,7 +576,7 @@ public class CrewActivity extends AppCompatActivity {
         ArrayList<String> crewNames = new ArrayList();
         for (int i = 0; i < this.eIndeces.size(); i++) {
             int j = ((Integer) this.eIndeces.get(i)).intValue();
-            this.crewIds.add(((DataSnapshot) this.eData.get(j)).getKey());
+            this.crewIds.add(this.eData.get(j));
             crewNames.add((String) this.eNames.get(j));
         }
         this.crewIds.add(this.uid);

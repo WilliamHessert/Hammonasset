@@ -76,7 +76,7 @@ public class CreateAccount extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> localTask) {
                     if(task.isSuccessful()) {
                         String newId = auth.getUid();
-                        transition(ueml, newId);
+                        addEmployeeRecord(ueml, newId);
                     }
                     else {
                         error();
@@ -89,10 +89,23 @@ public class CreateAccount extends AppCompatActivity {
         }
     }
 
-    private void transition(String eml, String nid) {
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
-        String fName = getIntent().getStringExtra("fName");
-        String lName = getIntent().getStringExtra("lName");
+    private void addEmployeeRecord(final String eml, final String newId) {
+        final String fName = getIntent().getStringExtra("fName");
+        final String lName = getIntent().getStringExtra("lName");
+        String name = fName+" "+lName;
+
+        final FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference ref = db.getReference("employees").child(newId);
+
+        ref.setValue(name).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                transition(eml, newId, db, fName, lName);
+            }
+        });
+    }
+
+    private void transition(String eml, String nid, FirebaseDatabase db, String fName, String lName) {
         String hDate = getIntent().getStringExtra("hDate");
         String type  = getIntent().getStringExtra("type");
 
@@ -118,7 +131,10 @@ public class CreateAccount extends AppCompatActivity {
         iRef.child("state").setValue("");
         iRef.child("zip").setValue("");
 
+        db.getReference("unregistered").child(userId).removeValue();
+        db.getReference("employees").child(userId).removeValue();
         db.getReference("Users").child(userId).removeValue();
+
         db.getReference("OldIds").push().setValue(userId);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(CreateAccount.this);

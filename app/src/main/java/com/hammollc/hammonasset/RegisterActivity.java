@@ -21,6 +21,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -38,7 +39,6 @@ public class RegisterActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         users = new ArrayList<>();
-        populateUsers();
 
         final RelativeLayout enterLayout = findViewById(R.id.ssnCont);
         final ProgressBar progressBar = findViewById(R.id.ssnProgress);
@@ -49,7 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 enterLayout.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
-                findEmp();
+                populateUsers();
             }
         });
     }
@@ -66,25 +66,41 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void populateUsers() {
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        usersRef.addChildEventListener(new ChildEventListener() {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("unregistered");
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                users.add(dataSnapshot);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot userData: dataSnapshot.getChildren()) {
+                    users.add(userData);
+                }
+
+                findEmp();
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) { }
+            public void onCancelled(DatabaseError databaseError) {
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) { }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) { }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) { }
+            }
         });
+//        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+//        usersRef.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                users.add(dataSnapshot);
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) { }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) { }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) { }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) { }
+//        });
     }
 
     private void findEmp() {
@@ -113,10 +129,10 @@ public class RegisterActivity extends AppCompatActivity {
             String entSsn = eSsn.getText().toString();
 
             String userId = snap.getKey();
-            String fName = snap.child("info").child("fName").getValue().toString();
-            String lName = snap.child("info").child("lName").getValue().toString();
-            String hDate = snap.child("info").child("hireDate").getValue().toString();
-            String type = snap.child("type").getValue().toString();
+            String fName = snap.child("fName").getValue(String.class);
+            String lName = snap.child("lName").getValue(String.class);
+            String hDate = snap.child("hireDate").getValue(String.class);
+            String type = snap.child("type").getValue(String.class);
 
             confirmEmp(userId, fName, lName, hDate, type, entSsn);
         }

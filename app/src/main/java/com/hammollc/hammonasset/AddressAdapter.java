@@ -2,6 +2,8 @@ package com.hammollc.hammonasset;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,14 +24,12 @@ import java.util.List;
 
 public class AddressAdapter extends BaseAdapter {
 
-    boolean review;
     Context context;
     ArrayList<AddressBlock> items;
 
     private static LayoutInflater inflater = null;
 
-    public AddressAdapter(Context context, ArrayList<AddressBlock> items, boolean review) {
-        this.review = review;
+    public AddressAdapter(Context context, ArrayList<AddressBlock> items) {
         this.context = context;
         this.items = items;
 
@@ -60,8 +60,51 @@ public class AddressAdapter extends BaseAdapter {
         final View view = vi;
         final AddressBlock item = items.get(position);
 
+        EditText add = vi.findViewById(R.id.blockAddress);
+        EditText cty = vi.findViewById(R.id.blockAddressCity);
+        EditText zip = vi.findViewById(R.id.blockAddressZip);
+
+        add.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                item.setAddress(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
+        cty.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                item.setCity(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
+        zip.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                item.setZip(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
         final EditText ste = vi.findViewById(R.id.blockAddressState);
-        final List<String> towns = Arrays.asList(context.getResources().getStringArray(R.array.statesFull));
+        final List<String> states = Arrays.asList(context.getResources().getStringArray(R.array.statesFull));
         ste.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,14 +115,16 @@ public class AddressAdapter extends BaseAdapter {
 
                 ListView tList = dialog.findViewById(R.id.selectList);
                 ArrayAdapter<String> tAdapter = new ArrayAdapter<>(
-                        context, android.R.layout.simple_list_item_1, towns);
+                        context, android.R.layout.simple_list_item_1, states);
                 tList.setAdapter(tAdapter);
 
                 tList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String town = towns.get(position);
-                        ste.setText(town);
+                        String state = states.get(position);
+                        ste.setText(state);
+                        item.setState(state);
+
                         dialog.dismiss();
                     }
                 });

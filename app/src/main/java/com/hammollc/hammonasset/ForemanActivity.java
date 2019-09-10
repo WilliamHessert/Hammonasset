@@ -60,8 +60,7 @@ public class ForemanActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         foreman = false;
-        Intent i = new Intent(ForemanActivity.this, DriverApplicationActivity.class);
-        ForemanActivity.this.startActivity(i);
+
         Bundle args = getIntent().getExtras();
         String type = args.getString("type", "");
 

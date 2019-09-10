@@ -1,6 +1,9 @@
 package com.hammollc.hammonasset;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,9 +22,14 @@ import java.util.List;
 
 public class DriverApplicationActivity extends AppCompatActivity {
 
+    private Context context;
+    
     private String mode;
     private Button cont;
     private ArrayList<String> values = new ArrayList<>();
+    
+    private ArrayList<AddressBlock> addresses;
+    private AddressAdapter addressAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +41,21 @@ public class DriverApplicationActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        context = context;
+        setLaterViews();
+    }
+    
+    private void setLaterViews() {
+        presetAddressView();
         setInitView();
+    }
+    
+    private void presetAddressView() {
+        addresses = new ArrayList<>();
+        addressAdapter = new AddressAdapter(context, addresses);
+        ListView addList = findViewById(R.id.daAddressList);
+
+        addList.setAdapter(addressAdapter);
     }
 
     private void setInitView() {
@@ -51,14 +74,14 @@ public class DriverApplicationActivity extends AppCompatActivity {
         ste.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(DriverApplicationActivity.this);
+                final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(false);
                 dialog.setContentView(R.layout.dialog_select_view);
 
                 ListView tList = dialog.findViewById(R.id.selectList);
                 ArrayAdapter<String> tAdapter = new ArrayAdapter<>(
-                        DriverApplicationActivity.this, android.R.layout.simple_list_item_1, towns);
+                        context, android.R.layout.simple_list_item_1, towns);
                 tList.setAdapter(tAdapter);
 
                 tList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -128,14 +151,71 @@ public class DriverApplicationActivity extends AppCompatActivity {
 
             setAddressView();
         }
+        else {
+            generateAlert("Error", mess);
+        }
     }
 
     private void setAddressView() {
         mode = "addr";
+
+        findViewById(R.id.daInfoView).setVisibility(View.GONE);
+        findViewById(R.id.daAddressView).setVisibility(View.VISIBLE);
+        
+        Button addBtn = findViewById(R.id.daAddAddressBtn);
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addresses.add(new AddressBlock());
+                addressAdapter.notifyDataSetChanged();
+            }
+        });
+        
+        cont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateAddresses();
+            }
+        });
     }
 
     public void remAddressBlock(int i) {
+        addresses.remove(i);
+        addressAdapter.notifyDataSetChanged();
+    }
+
+    private void validateAddresses() {
+        boolean incomp = false;
+
+        for(AddressBlock block: addresses) {
+            if(block.getAddress().equals("") || block.getCity().equals("")
+                    || block.getState().equals("") || block.getZip().equals(""))
+                incomp = true;
+        }
+
+        if(incomp)
+            generateAlert("Error", "Please complete all address fields before continuing");
+        else {
+            setLicenseView();
+        }
+    }
+
+    private void setLicenseView() {
 
     }
 
+    private void generateAlert(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title);
+        builder.setMessage(message);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+    }
 }
