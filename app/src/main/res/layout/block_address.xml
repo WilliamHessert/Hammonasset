@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+        android:id="@+id/blockAddressCloseBtn"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        app:srcCompat="@android:drawable/ic_delete"
+        android:layout_marginEnd="15dp"/>
+
+    <LinearLayout
+        android:id="@+id/blockAddressLayout1"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/blockAddressCloseBtn">
+
+        <EditText
+            android:id="@+id/blockAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:hint="Address"
+            android:inputType="text"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:nextFocusDown="@id/blockAddressCity"/>
+
+        <EditText
+            android:id="@+id/blockAddressCity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="City/Town"
+            android:inputType="text"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:nextFocusDown="@id/blockAddressZip"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/blockAddressLayout2"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/blockAddressLayout1">
+
+        <EditText
+            android:id="@+id/blockAddressState"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:hint="State"
+            android:inputType="none"
+            android:focusable="false"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp" />
+
+        <EditText
+            android:id="@+id/blockAddressZip"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Zip Code"
+            android:inputType="number"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:imeOptions="actionDone"/>
+    </LinearLayout>
+
+</RelativeLayout>

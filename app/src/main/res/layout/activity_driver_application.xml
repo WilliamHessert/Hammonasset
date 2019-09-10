@@ -6,6 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".DriverApplicationActivity">
 
+    <ProgressBar
+        android:id="@+id/daProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="250dp"
+        android:layout_height="110dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:progressTint="@color/colorPrimary"
+        android:progressBackgroundTint="#a8a8a8"
+        android:max="100"
+        android:progress="50"
+        android:secondaryProgress="100"
+        android:progressDrawable="@drawable/progress_circle"
+        android:indeterminate="false"/>
+
     <TextView
         android:id="@+id/daProgressText"
         android:layout_width="wrap_content"
@@ -14,16 +29,8 @@
         android:textSize="24sp"
         android:textColor="@color/colorPrimary"
         android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
-        android:layout_alignParentTop="true"/>
+        android:layout_marginTop="60dp" />
 
-    <ProgressBar
-        android:id="@+id/daProgressBar"
-        android:layout_margin="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:progressTint="@color/colorPrimary"
-        android:progressBackgroundTint="#a8a8a8"/>
 
     <Button
         android:id="@+id/daContBtn"
@@ -54,53 +61,114 @@
                 android:id="@+id/daFirstName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".4"
+                android:layout_weight=".5"
                 android:hint="First Name*"
                 android:inputType="text"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_margin="10dp"/>
-
-            <EditText
-                android:id="@+id/daMiddleInitial"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".1"
-                android:hint="M.I."
-                android:inputType="text"
-                android:layout_marginTop="20dp"
-                android:layout_margin="10dp"/>
+                android:layout_margin="20dp"
+                android:nextFocusDown="@id/daLastName"/>
 
             <EditText
                 android:id="@+id/daLastName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".4"
+                android:layout_weight=".5"
                 android:hint="Last Name*"
                 android:inputType="text"
-                android:layout_marginTop="20dp"
-                android:layout_margin="10dp"/>
-
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".1"
-                android:hint="Suffix"
-                android:inputType="text"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_margin="10dp"/>
-
+                android:layout_margin="20dp"
+                android:nextFocusDown="@id/daAddress"/>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/daAddressLayout"
+            android:id="@+id/daAddressLayout1"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/daNameLayout">
+
+            <EditText
+                android:id="@+id/daAddress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:hint="Address"
+                android:inputType="text"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:nextFocusDown="@id/daCity"/>
+
+            <EditText
+                android:id="@+id/daCity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="City/Town"
+                android:inputType="text"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:nextFocusDown="@id/daZip"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/daAddressLayout2"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/daAddressLayout1">
+
+            <EditText
+                android:id="@+id/daState"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:hint="State"
+                android:inputType="none"
+                android:focusable="false"
+                android:layout_margin="20dp" />
+
+            <EditText
+                android:id="@+id/daZip"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Zip Code"
+                android:inputType="number"
+                android:layout_margin="20dp"
+                android:nextFocusDown="@id/daDob"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/daSpecialLayout"
             android:orientation="horizontal"
             android:weightSum="1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@id/daAddressLayout2">
 
+            <EditText
+                android:id="@+id/daDob"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:hint="Date of Birth"
+                android:inputType="date"
+                android:layout_margin="20dp"
+                android:nextFocusForward="@id/daSocial"/>
 
+            <EditText
+                android:id="@+id/daSocial"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:hint="Social Security Number"
+                android:inputType="number"
+                android:layout_margin="20dp"
+                android:imeOptions="actionDone"/>
         </LinearLayout>
     </RelativeLayout>
 
@@ -111,6 +179,31 @@
         android:layout_below="@id/daProgressBar"
         android:layout_above="@id/daContBtn"
         android:visibility="gone">
+
+        <TextView
+            android:id="@+id/daAddressInstText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:layout_margin="20dp"/>
+
+        <Button
+            android:id="@+id/daAddAddressBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_margin="20dp"
+            android:layout_below="@id/daAddressInstText"
+            android:text="+ Address"
+            android:textColor="#fff"
+            android:background="@color/colorPrimary" />
+
+        <ListView
+            android:id="@+id/daAddressList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/daAddAddressBtn"
+            android:layout_margin="10dp"
+            android:background="@drawable/box"/>
     </RelativeLayout>
 
     <RelativeLayout

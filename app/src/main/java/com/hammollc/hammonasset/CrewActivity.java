@@ -251,7 +251,7 @@ public class CrewActivity extends AppCompatActivity {
         ref.child("num").addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
-                    getEmpNum(ref);
+                    getEmployees();
                 } else {
                     loadExistingCrew(ref, (String) dataSnapshot.getValue(String.class));
                 }
@@ -264,8 +264,9 @@ public class CrewActivity extends AppCompatActivity {
 
     private void loadExistingCrew(final DatabaseReference ref, String nString) {
         this.num = Integer.parseInt(nString);
+
         if (this.num <= 0) {
-            getEmpNum(ref);
+            getEmployees();
         }
         ref.addChildEventListener(new ChildEventListener() {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -307,54 +308,58 @@ public class CrewActivity extends AppCompatActivity {
         });
     }
 
-    private void getEmpNum(final DatabaseReference ref) {
-        Log.i("AHHH", "Get Emp Num");
-        FirebaseDatabase.getInstance().getReference("activeNum").addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getEmployees() {
+        FirebaseDatabase.getInstance().getReference("Users").addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
-                int empNum = Integer.parseInt((String) dataSnapshot.getValue(String.class));
-                setEmpNum(empNum);
-                getEmployees(ref);
-            }
-
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-    private void setEmpNum(int eNum) {
-        this.eNum = eNum - 1;
-    }
-
-    private void getEmployees(final DatabaseReference ref) {
-        eData = new ArrayList<>();
-        eNames = new ArrayList<>();
-
-        FirebaseDatabase.getInstance().getReference("Users").addChildEventListener(new ChildEventListener() {
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                String key = dataSnapshot.getKey();
-//                if (key.length() > 20 && !key.equals(uid)) {
-//                    addEmp(dataSnapshot, ref);
-//                }
-                if (!key.equals(uid)) {
-                    addEmp(dataSnapshot, ref);
+                for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                    String lName = childDataSnapshot.child("info").child("lName").getValue(String.class);
+                    String name = childDataSnapshot.child("info").child("fName").getValue(String.class) + " " + lName;
+                    Log.i("AHHH", name);
+                    eNames.add(name);
+                    Collections.sort(eNames);
+                    eData.add(eNames.indexOf(name), childDataSnapshot);
                 }
             }
 
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            }
-
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-
-        openEmployeeDialog(ref);
     }
+
+//    private void setEmpNum(int eNum) {
+//        this.eNum = eNum - 1;
+//    }
+
+//    private void getEmployees(final DatabaseReference ref) {
+//        eData = new ArrayList<>();
+//        eNames = new ArrayList<>();
+//
+//        FirebaseDatabase.getInstance().getReference("Users").addChildEventListener(new ChildEventListener() {
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                String key = dataSnapshot.getKey();
+////                if (key.length() > 20 && !key.equals(uid)) {
+////                    addEmp(dataSnapshot, ref);
+////                }
+//                if (!key.equals(uid)) {
+//                    addEmp(dataSnapshot, ref);
+//                }
+//            }
+//
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//            }
+//
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//            }
+//
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//            }
+//
+//            public void onCancelled(DatabaseError databaseError) {
+//            }
+//        });
+//
+//        openEmployeeDialog(ref);
+//    }
 
     private void addEmp(DataSnapshot data, DatabaseReference ref) {
         String lName = data.child("info").child("lName").getValue(String.class);
@@ -431,6 +436,7 @@ public class CrewActivity extends AppCompatActivity {
         copyCount = 0;
         final ArrayList<String> empCopy = new ArrayList();
         final ArrayList<String> unchangedCopy = new ArrayList();
+
         ((Button) findViewById(R.id.addEmpBtn)).setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (copyCount == 0 || copyCount != eNames.size()) {
@@ -468,6 +474,7 @@ public class CrewActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
+
         (findViewById(R.id.addDefCrewBtn)).setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(CrewActivity.this);
@@ -514,6 +521,7 @@ public class CrewActivity extends AppCompatActivity {
                 builder.create().show();
             }
         });
+
         ((Button) findViewById(R.id.createCrewBtn)).setOnClickListener(new OnClickListener() {
 
             /* renamed from: com.hammollc.hammonasset.CrewActivity$19$1 */
