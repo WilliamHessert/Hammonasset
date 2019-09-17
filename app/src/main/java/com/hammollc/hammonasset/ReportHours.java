@@ -811,7 +811,7 @@ public class ReportHours extends AppCompatActivity {
 
                 try {
                     if (foreman.equals("") || foreman.equals(null) || foreman.equals(uid))
-                        getLocationAndFinish(ref);
+                        updateAlerts(ref);
                     else {
                         DatabaseReference nRef = FirebaseDatabase.getInstance()
                                 .getReference("Users").child(foreman).child("crews");
@@ -819,18 +819,34 @@ public class ReportHours extends AppCompatActivity {
                         nRef.setValue("true").addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                getLocationAndFinish(ref);
+                                updateAlerts(ref);
                             }
                         });
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    getLocationAndFinish(ref);
+                    updateAlerts(ref);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) { }
+        });
+    }
+
+    private void updateAlerts(final DatabaseReference ref) {
+        date = date.replaceAll("/", "-");
+        String timeString = "Night";
+
+        if(isDay)
+            timeString = "Day";
+
+        FirebaseDatabase.getInstance().getReference("alerts").child(uid).child("hours")
+                .child(date+" "+timeString).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                getLocationAndFinish(ref);
+            }
         });
     }
     private void getLocationAndFinish(DatabaseReference ref) {

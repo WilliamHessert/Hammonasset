@@ -133,7 +133,7 @@ public class EmergencyContact extends AppCompatActivity {
                                         ref.child("sPhone").setValue(s).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
-                                                EmergencyContact.this.finish();
+                                                updateAlerts();
                                             }
                                         });
                                     }
@@ -142,6 +142,17 @@ public class EmergencyContact extends AppCompatActivity {
                         });
                     }
                 });
+            }
+        });
+    }
+
+    private void updateAlerts() {
+        FirebaseDatabase.getInstance().getReference("alerts").child(uid)
+                .child("emergencyContact").setValue(false).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(EmergencyContact.this, "Success!", Toast.LENGTH_LONG).show();
+                EmergencyContact.this.finish();
             }
         });
     }

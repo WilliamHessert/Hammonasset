@@ -392,11 +392,28 @@ public class LicenseActivity extends AppCompatActivity {
                                 ref.child("licenseImage").setValue(encodedString).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        LicenseActivity.this.finish();
+                                        updateAlerts(ex);
                                     }
                                 });
                             }
                         });
+                    }
+                });
+            }
+        });
+    }
+
+    private void updateAlerts(final String ex) {
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("alerts").child(uid);
+
+        ref.child("license").setValue(false).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                ref.child("expirationDates").child("license").setValue(ex).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(LicenseActivity.this, "Success!", Toast.LENGTH_LONG).show();
+                        LicenseActivity.this.finish();
                     }
                 });
             }

@@ -346,7 +346,7 @@ public class MedicalCertificateActivity extends AppCompatActivity {
         }
     }
 
-    private void uploadData(String ex) {
+    private void uploadData(final String ex) {
         view.setVisibility(View.GONE);
         pBar.setVisibility(View.VISIBLE);
 
@@ -359,6 +359,23 @@ public class MedicalCertificateActivity extends AppCompatActivity {
                 ref.child("medicalCertificateImage").setValue(encodedString).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        updateAlerts(ex);
+                    }
+                });
+            }
+        });
+    }
+
+    private void updateAlerts(final String ex) {
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("alerts").child(uid);
+
+        ref.child("medCard").setValue(false).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                ref.child("expirationDates").child("medCard").setValue(ex).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(MedicalCertificateActivity.this, "Success!", Toast.LENGTH_LONG).show();
                         MedicalCertificateActivity.this.finish();
                     }
                 });

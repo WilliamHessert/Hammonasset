@@ -365,9 +365,26 @@ public class OshaCardActivity extends AppCompatActivity {
                         ref.child("oshaCardImage").setValue(encodedString).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                OshaCardActivity.this.finish();
+                                updateAlerts(ex);
                             }
                         });
+                    }
+                });
+            }
+        });
+    }
+
+    private void updateAlerts(final String ex) {
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("alerts").child(uid);
+
+        ref.child("oshaCard").setValue(false).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                ref.child("expirationDates").child("oshaCard").setValue(ex).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(OshaCardActivity.this, "Success!", Toast.LENGTH_LONG).show();
+                        OshaCardActivity.this.finish();
                     }
                 });
             }

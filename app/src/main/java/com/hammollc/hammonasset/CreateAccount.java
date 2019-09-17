@@ -105,38 +105,168 @@ public class CreateAccount extends AppCompatActivity {
         });
     }
 
-    private void transition(String eml, String nid, FirebaseDatabase db, String fName, String lName) {
-        String hDate = getIntent().getStringExtra("hDate");
-        String type  = getIntent().getStringExtra("type");
+    private void transition(final String eml, final String nid, final FirebaseDatabase db, final String fName, final String lName) {
+        final String type  = getIntent().getStringExtra("type");
 
-        DatabaseReference ref = db.getReference("Users").child(nid);
-        ref.child("grade").setValue(0);
-        ref.child("type").setValue(type);
+        final DatabaseReference ref = db.getReference("Users").child(nid);
+        ref.child("grade").setValue(0).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                ref.child("type").setValue(type).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        uploadEmergencyContactInfo(ref, eml, nid, db, fName, lName);
+                    }
+                });
+            }
+        });
+    }
 
-        DatabaseReference cRef = ref.child("eContact");
-        cRef.child("email").setValue("");
-        cRef.child("name").setValue("");
-        cRef.child("pPhone").setValue("");
-        cRef.child("relationship").setValue("");
-        cRef.child("sPhone").setValue("");
+    private void uploadEmergencyContactInfo(final DatabaseReference ref, final String eml,
+                                            final String nid, final FirebaseDatabase db, final String fName, final String lName) {
+        final DatabaseReference cRef = ref.child("eContact");
+        cRef.child("email").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                cRef.child("name").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        cRef.child("pPhone").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                cRef.child("relationship").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        cRef.child("sPhone").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                uploadPersonalInfo(ref, eml, nid, db, fName, lName);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
 
-        DatabaseReference iRef = ref.child("info");
-        iRef.child("address").setValue("");
-        iRef.child("city").setValue("");
-        iRef.child("email").setValue(eml);
-        iRef.child("fName").setValue(fName);
-        iRef.child("hireDate").setValue(hDate);
-        iRef.child("lName").setValue(lName);
-        iRef.child("phone").setValue("");
-        iRef.child("state").setValue("");
-        iRef.child("zip").setValue("");
+    private void uploadPersonalInfo(final DatabaseReference ref, final String eml,
+                                            final String nid, final FirebaseDatabase db, final String fName, final String lName) {
+        final DatabaseReference iRef = ref.child("info");
+        final String hDate = getIntent().getStringExtra("hDate");
 
-        db.getReference("unregistered").child(userId).removeValue();
-        db.getReference("employees").child(userId).removeValue();
-        db.getReference("Users").child(userId).removeValue();
+        iRef.child("address").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                iRef.child("city").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        iRef.child("email").setValue(eml).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                iRef.child("fName").setValue(fName).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        iRef.child("hireDate").setValue(hDate).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                iRef.child("lName").setValue(lName).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        iRef.child("phone").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                iRef.child("state").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                        iRef.child("zip").setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                                uploadAlerts(nid, db);
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
 
-        db.getReference("OldIds").push().setValue(userId);
+    private void uploadAlerts(String nid, final FirebaseDatabase db) {
+        final DatabaseReference aRef = db.getReference("alerts").child(nid);
 
+        aRef.child("emergencyContact").setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                aRef.child("license").setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        aRef.child("medCard").setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                aRef.child("oshaCard").setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        aRef.child("personalInformation").setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                aRef.child("unregistered").setValue(false).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        removeOldInformation(db);
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    private void removeOldInformation(final FirebaseDatabase db) {
+        db.getReference("unregistered").child(userId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                db.getReference("employees").child(userId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        db.getReference("Users").child(userId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                db.getReference("OldIds").push().setValue(userId).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        alertAccountCreation();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    private void alertAccountCreation() {
         AlertDialog.Builder builder = new AlertDialog.Builder(CreateAccount.this);
         builder.setTitle("Success");
         builder.setMessage("Created Account Successfully");

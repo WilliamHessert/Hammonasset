@@ -6,8 +6,8 @@ android {
         applicationId "com.hammollc.hammonasset"
         minSdkVersion 23
         targetSdkVersion 27
-        versionCode 304
-        versionName "3.04"
+        versionCode 306
+        versionName "3.06"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

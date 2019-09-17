@@ -2652,11 +2652,22 @@ public class DailyReportActivity extends AppCompatActivity {
     }
 
     private void updateReportField() {
-        String uid = FirebaseAuth.getInstance().getUid();
+        final String uid = FirebaseAuth.getInstance().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref = ref.child(uid).child("crews").child(getMondayDate()).child(date).child(time);
 
         ref.child("report").setValue("true").addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                updateAlerts(uid);
+            }
+        });
+    }
+
+    private void updateAlerts(String uid) {
+        Toast.makeText(DailyReportActivity.this, uid, Toast.LENGTH_LONG).show();
+        FirebaseDatabase.getInstance().getReference("alerts").child(uid).child("dailyReport")
+                .child(date).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 finishAndClose();

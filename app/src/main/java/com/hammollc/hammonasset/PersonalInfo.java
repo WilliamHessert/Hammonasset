@@ -150,7 +150,7 @@ public class PersonalInfo extends AppCompatActivity {
                                         ref.child("zip").setValue(z).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
-                                                PersonalInfo.this.finish();
+                                                updateAlerts();
                                             }
                                         });
                                     }
@@ -159,6 +159,17 @@ public class PersonalInfo extends AppCompatActivity {
                         });
                     }
                 });
+            }
+        });
+    }
+
+    private void updateAlerts() {
+        FirebaseDatabase.getInstance().getReference("alerts").child(uid)
+                .child("personalInformation").setValue(false).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(PersonalInfo.this, "Success!", Toast.LENGTH_LONG).show();
+                PersonalInfo.this.finish();
             }
         });
     }

@@ -696,7 +696,7 @@ public class CrewActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getUid()).child("crews").child(mDate).child(nDate).child(dString).child("poNumber").setValue(poNumber).addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
-                                createDefaultCrewDialog(nDate);
+                                updateForemanAlerts(nDate, poNumber);
                             }
                         });
                     }
@@ -704,6 +704,37 @@ public class CrewActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void updateForemanAlerts(final String date, String poNumber) {
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("alerts");
+
+        ref.child(uid).child("dailyReport").child(date).setValue(poNumber).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                    updateEmployeeAlerts(0, ref, date);
+            }
+        });
+    }
+
+    private void updateEmployeeAlerts(int i, final DatabaseReference ref, final String date) {
+        if(i == crewIds.size())
+            createDefaultCrewDialog(date);
+        else {
+            final int j = i+1;
+
+            String time = "Day";
+
+            if(!day)
+                time = "Night";
+
+            ref.child(crewIds.get(i)).child("hours").child(date+" "+time).setValue(uid).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    updateEmployeeAlerts(j, ref, date);
+                }
+            });
+        }
     }
 
     private void createDefaultCrewDialog(final String nDate) {
