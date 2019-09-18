@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -75,15 +76,20 @@ public class CrewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView((int) R.layout.activity_crew);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         this.uid = getIntent().getStringExtra("uid");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         this.pBar = (ProgressBar) findViewById(R.id.crewProgress);
         this.pField = (EditText) findViewById(R.id.enterPoNumber);
         this.dField = (EditText) findViewById(R.id.enterCrewDate);
+
         this.pBar.setVisibility(View.VISIBLE);
         this.pField.setVisibility(View.GONE);
         this.dField.setVisibility(View.GONE);
+
         downloadPoNums();
     }
 

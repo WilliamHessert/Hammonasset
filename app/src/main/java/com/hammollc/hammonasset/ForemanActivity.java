@@ -2,6 +2,7 @@ package com.hammollc.hammonasset;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -60,6 +61,7 @@ public class ForemanActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         foreman = false;
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         Bundle args = getIntent().getExtras();
         String type = args.getString("type", "");
