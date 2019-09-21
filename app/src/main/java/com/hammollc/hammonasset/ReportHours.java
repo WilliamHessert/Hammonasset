@@ -808,7 +808,7 @@ public class ReportHours extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String foreman = dataSnapshot.getValue(String.class);
-
+                Log.i("AHHH", "Foreman: "+foreman);
                 try {
                     if (foreman.equals("") || foreman.equals(null) || foreman.equals(uid))
                         updateAlerts(ref);

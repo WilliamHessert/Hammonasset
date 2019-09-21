@@ -5,6 +5,7 @@ import android.app.AlertDialog.Builder;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -73,22 +74,24 @@ public class CrewActivity extends AppCompatActivity {
     String time;
     String uid;
 
+    Context context = CrewActivity.this;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView((int) R.layout.activity_crew);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        this.uid = getIntent().getStringExtra("uid");
+        uid = getIntent().getStringExtra("uid");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        this.pBar = (ProgressBar) findViewById(R.id.crewProgress);
-        this.pField = (EditText) findViewById(R.id.enterPoNumber);
-        this.dField = (EditText) findViewById(R.id.enterCrewDate);
+        pBar = findViewById(R.id.crewProgress);
+        pField = findViewById(R.id.enterPoNumber);
+        dField = findViewById(R.id.enterCrewDate);
 
-        this.pBar.setVisibility(View.VISIBLE);
-        this.pField.setVisibility(View.GONE);
-        this.dField.setVisibility(View.GONE);
+        pBar.setVisibility(View.VISIBLE);
+        pField.setVisibility(View.GONE);
+        dField.setVisibility(View.GONE);
 
         downloadPoNums();
     }
@@ -140,12 +143,15 @@ public class CrewActivity extends AppCompatActivity {
 
         pNum.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(CrewActivity.this);
+                final Dialog dialog = new Dialog(context);
+
                 dialog.requestWindowFeature(1);
                 dialog.setCancelable(false);
                 dialog.setContentView(R.layout.dialog_select_view);
-                ListView empList = (ListView) dialog.findViewById(R.id.selectList);
-                empList.setAdapter(new ArrayAdapter(CrewActivity.this, android.R.layout.simple_list_item_1, poNums));
+
+                ListView empList = dialog.findViewById(R.id.selectList);
+                empList.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, poNums));
+
                 empList.setOnItemClickListener(new OnItemClickListener() {
                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                         pNum.setText(poNums.get(position));
@@ -160,13 +166,13 @@ public class CrewActivity extends AppCompatActivity {
                                 public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
                                     selectedmonth++;
                                     dText.setText("" + selectedmonth + "/" + selectedday + "/" + selectedyear);
-                                    CrewActivity.this.setDate(selectedmonth, selectedday, selectedyear);
-                                    CrewActivity.this.addBtnViews();
+                                    setDate(selectedmonth, selectedday, selectedyear);
+                                    addBtnViews();
                                 }
                             }
 
                             public void onClick(View v) {
-                                DatePickerDialog mDatePicker = new DatePickerDialog(CrewActivity.this, new C03601(), mYear, mMonth, mDay);
+                                DatePickerDialog mDatePicker = new DatePickerDialog(context, new C03601(), mYear, mMonth, mDay);
                                 mDatePicker.setTitle("Select Date");
                                 mDatePicker.show();
                             }
@@ -175,7 +181,8 @@ public class CrewActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-                ((Button) dialog.findViewById(R.id.closeDialog)).setOnClickListener(new OnClickListener() {
+
+                dialog.findViewById(R.id.closeDialog).setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
                         dialog.dismiss();
                     }
@@ -187,11 +194,14 @@ public class CrewActivity extends AppCompatActivity {
 
     private void addBtnViews() {
         this.time = "";
-        ((RelativeLayout) findViewById(R.id.dayNigHolder)).setVisibility(View.VISIBLE);
+        findViewById(R.id.dayNigHolder).setVisibility(View.VISIBLE);
+
         final Button d = findViewById(R.id.dBtn);
         final Button n = findViewById(R.id.nBtn);
+
         d.setEnabled(false);
         n.setEnabled(false);
+
         d.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 searchForExistingCrew("day");
@@ -217,6 +227,7 @@ public class CrewActivity extends AppCompatActivity {
         Builder builder = new Builder(this);
         builder.setTitle("Select");
         builder.setMessage("Please select whether this is a day crew or a night crew");
+
         builder.setPositiveButton("Night", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 n.performClick();
@@ -231,6 +242,7 @@ public class CrewActivity extends AppCompatActivity {
             }
         });
 
+        builder.setCancelable(false);
         builder.create().show();
     }
 
@@ -321,71 +333,23 @@ public class CrewActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference("employees").addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-//                    String lName = childDataSnapshot.child("info").child("lName").getValue(String.class);
-//                    String name = childDataSnapshot.child("info").child("fName").getValue(String.class) + " " + lName;
-                    String name = childDataSnapshot.getValue(String.class);
-                    Log.i("AHHH", name);
-                    eNames.add(name);
-                    Collections.sort(eNames);
-                    eData.add(eNames.indexOf(name), childDataSnapshot.getKey());
+                    String id = childDataSnapshot.getKey();
+
+                    if(id.length() > 20 && !id.equals(uid)) {
+                        String name = childDataSnapshot.getValue(String.class);
+
+                        eNames.add(name);
+                        Collections.sort(eNames);
+                        eData.add(eNames.indexOf(name), id);
+                    }
                 }
 
                 openEmployeeDialog(ref);
             }
 
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError) { }
         });
     }
-
-//    private void setEmpNum(int eNum) {
-//        this.eNum = eNum - 1;
-//    }
-
-//    private void getEmployees(final DatabaseReference ref) {
-//        eData = new ArrayList<>();
-//        eNames = new ArrayList<>();
-//
-//        FirebaseDatabase.getInstance().getReference("Users").addChildEventListener(new ChildEventListener() {
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                String key = dataSnapshot.getKey();
-////                if (key.length() > 20 && !key.equals(uid)) {
-////                    addEmp(dataSnapshot, ref);
-////                }
-//                if (!key.equals(uid)) {
-//                    addEmp(dataSnapshot, ref);
-//                }
-//            }
-//
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//            }
-//
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//            }
-//
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//            }
-//
-//            public void onCancelled(DatabaseError databaseError) {
-//            }
-//        });
-//
-//        openEmployeeDialog(ref);
-//    }
-
-//    private void addEmp(DataSnapshot data, DatabaseReference ref) {
-//        String lName = data.child("info").child("lName").getValue(String.class);
-//        String name = data.child("info").child("fName").getValue(String.class) + " " + lName;
-//        Log.i("AHHH", name);
-//        eNames.add(name);
-//        Collections.sort(eNames);
-//        eData.add(eNames.indexOf(name), data);
-//
-//
-//        if (this.eNames.size() == this.eNum) {
-//            openEmployeeDialog(ref);
-//        }
-//    }
 
     private void getDefaultCrews(final DatabaseReference ref) {
         DatabaseReference cRef = FirebaseDatabase.getInstance().getReference("Users").child("uid").child("defaultCrews");
@@ -461,13 +425,13 @@ public class CrewActivity extends AppCompatActivity {
                     }
                     updateCopyCount(unchangedCopy.size());
                 }
-                final Dialog dialog = new Dialog(CrewActivity.this);
+                final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(1);
                 dialog.setCancelable(false);
                 dialog.setContentView(R.layout.dialog_employee_view);
 
                 ListView empList = (ListView) dialog.findViewById(R.id.viewAllEmps);
-                empList.setAdapter(new ArrayAdapter(CrewActivity.this, android.R.layout.simple_list_item_1, empCopy));
+                empList.setAdapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, empCopy));
                 empList.setOnItemClickListener(new OnItemClickListener() {
                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                         eIndeces.add(Integer.valueOf(unchangedCopy.indexOf(empCopy.get(position))));
@@ -489,7 +453,7 @@ public class CrewActivity extends AppCompatActivity {
 
         (findViewById(R.id.addDefCrewBtn)).setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(CrewActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Coming Soon");
                 builder.setMessage("This functionality is currently under maintenance. However," +
                         " if you save a default crew, it will be saved to your account and you" +
@@ -517,7 +481,7 @@ public class CrewActivity extends AppCompatActivity {
             }
 
             public void onItemClick(AdapterView<?> adapterView, View view, final int position, long id) {
-                Builder builder = new Builder(CrewActivity.this);
+                Builder builder = new Builder(context);
                 builder.setTitle("Confirm");
                 builder.setMessage("Are you sure you want to remove this employee from the crew?");
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -559,7 +523,7 @@ public class CrewActivity extends AppCompatActivity {
             }
 
             public void onClick(View v) {
-                Builder builder = new Builder(CrewActivity.this);
+                Builder builder = new Builder(context);
                 builder.setTitle("Confirm");
                 builder.setMessage("Are you sure you want to create this crew?");
                 builder.setPositiveButton("Yes", new C03581());
@@ -818,7 +782,7 @@ public class CrewActivity extends AppCompatActivity {
                     }
 
                     public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(CrewActivity.this, "Success!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
                         finish();
                     }
                 }
