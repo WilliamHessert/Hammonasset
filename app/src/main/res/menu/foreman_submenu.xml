@@ -15,6 +15,10 @@
                     android:id="@+id/nav_receipts"
                     android:icon="@drawable/ic_attach_money_black_24dp"
                     android:title="Upload Crew Receipt" />
+                <item
+                    android:id="@+id/nav_images"
+                    android:icon="@drawable/ic_menu_camera"
+                    android:title="Upload Site Image" />
             </menu>
         </item>
     </group>

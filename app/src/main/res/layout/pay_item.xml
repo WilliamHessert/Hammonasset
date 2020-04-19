@@ -11,7 +11,7 @@
         android:layout_margin="10dp"
         android:text="01"
         android:textSize="18sp"
-        android:textColor="#000"/>
+        android:textColor="#000" />
 
     <EditText
         android:id="@+id/payItemInput"
@@ -25,7 +25,8 @@
         android:paddingStart="5dp"
         android:focusable="false"
         android:clickable="false"
-        />
+        android:gravity="center"
+        android:textAlignment="center"/>
 
     <TextView
         android:id="@+id/payItemNameText"

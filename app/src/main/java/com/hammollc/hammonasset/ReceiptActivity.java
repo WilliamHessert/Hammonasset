@@ -78,6 +78,8 @@ public class ReceiptActivity extends AppCompatActivity {
     private static final int STORAGE_REQUEST = 2888;
     private static final int RESULT_LOAD_IMG = 200;
 
+    private ArrayList<ArrayList<String>> poNumbersToContract = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +95,28 @@ public class ReceiptActivity extends AppCompatActivity {
         name = fName+" "+lName;
 
         uid = getIntent().getStringExtra("uid");
-        initiateViews();
+        poNumsToContract();
+    }
+
+    private void poNumsToContract() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("poNumberToContract");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    ArrayList<String> list = new ArrayList<>();
+                    list.add(data.getKey());
+                    list.add(data.getValue(String.class));
+                    poNumbersToContract.add(list);
+                }
+
+                initiateViews();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) { }
+        });
     }
 
     private void initiateViews() {
@@ -191,7 +214,7 @@ public class ReceiptActivity extends AppCompatActivity {
             }
         });
 
-        downloadPoNumsNum();
+        downloadPoNums();
     }
 
     @Override
@@ -235,37 +258,20 @@ public class ReceiptActivity extends AppCompatActivity {
         dateText.setText(dateString);
     }
 
-    private void downloadPoNumsNum() {
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Contracts").child("16PSX0176").child("poNums");
-        ref.child("number").addListenerForSingleValueEvent(new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                downloadPoNums(Integer.parseInt(dataSnapshot.getValue(String.class)), ref);
-            }
-
-            public void onCancelled(DatabaseError databaseError) { }
-        });
-    }
-
-    private void downloadPoNums(final int num, DatabaseReference ref) {
-        final ArrayList<String> poNums = new ArrayList<>();
-        ref.addChildEventListener(new ChildEventListener() {
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (!dataSnapshot.getKey().equals("number")) {
-                    poNums.add(dataSnapshot.getKey());
-
-                    if (num == poNums.size()) {
-                        poNumbers = poNums;
-                        showView();
-                    }
+    private void downloadPoNums() {
+        poNumbers = new ArrayList<>();
+        DatabaseReference ref = db.getReference("poNums");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot data) {
+                for(DataSnapshot datum: data.getChildren()) {
+                    poNumbers.add(datum.getValue(String.class));
                 }
+
+                showView();
             }
 
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) { }
-
-            public void onChildRemoved(DataSnapshot dataSnapshot) { }
-
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) { }
-
+            @Override
             public void onCancelled(DatabaseError databaseError) { }
         });
     }
@@ -453,7 +459,7 @@ public class ReceiptActivity extends AppCompatActivity {
                               final String i, String d, String a, final String n) {
 
         final DatabaseReference ref = FirebaseDatabase
-                .getInstance().getReference("Receipts").child("16PSX0176").child(p).child(d).child(rid);
+                .getInstance().getReference("Receipts").child(getContract(p)).child(p).child(d).child(rid);
 
         final String name = getIntent()
                 .getStringExtra("lName")+", "+getIntent().getStringExtra("fName");
@@ -502,5 +508,14 @@ public class ReceiptActivity extends AppCompatActivity {
         }
 
         return idBuilder.toString();
+    }
+
+    private String getContract(String poNumber) {
+        for(ArrayList<String> list: poNumbersToContract) {
+            if(list.get(0).equals(poNumber))
+                return list.get(1);
+        }
+
+        return "16PSX0176";
     }
 }

@@ -105,14 +105,30 @@
             android:text="Pay Items"
             android:textColor="#000"/>
 
-        <ListView
-            android:id="@+id/payItemList"
+<!--        <ListView-->
+<!--            android:id="@+id/payItemList"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_margin="10dp"-->
+<!--            android:layout_below="@id/payItemText"-->
+<!--            android:background="@drawable/box"/>-->
+
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:layout_below="@id/payItemText"
-            android:background="@drawable/box"/>
+            android:background="@drawable/box">
 
+            <LinearLayout
+                android:id="@+id/payItemLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+            </LinearLayout>
+        </ScrollView>
     </RelativeLayout>
 
     <RelativeLayout
@@ -962,46 +978,6 @@
         android:layout_height="match_parent"
         android:layout_above="@id/contBtn"
         android:visibility="gone">
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/imageHolder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/contBtn"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/imageText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
-            android:textSize="24sp"
-            android:text="Image"
-            android:textColor="#000"/>
-
-        <Button
-            android:id="@+id/imageBtn"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_below="@id/imageText"
-            android:layout_margin="10dp"
-            android:background="@color/colorPrimary"
-            android:text="+ Add"
-            android:textColor="#fff"/>
-
-        <ListView
-            android:id="@+id/imageList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_below="@+id/imageBtn"
-            android:background="@drawable/box"/>
-
     </RelativeLayout>
 
     <Button

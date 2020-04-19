@@ -3,6 +3,8 @@ package com.hammollc.hammonasset;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,22 +88,35 @@ public class PayItemAdapter extends BaseAdapter {
         else {
             inpt.setHint(item.getUnit());
 
-            inpt.setOnClickListener(new View.OnClickListener() {
+//            inpt.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(fContext);
+//                    builder.setTitle("Unable to Process");
+//                    builder.setMessage("Please click anywhere on this item except this box to enter the value");
+//
+//                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.dismiss();
+//                        }
+//                    });
+//
+//                    builder.create().show();
+//                }
+//            });
+
+            inpt.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(fContext);
-                    builder.setTitle("Unable to Process");
-                    builder.setMessage("Please click anywhere on this item except this box to enter the value");
-
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-
-                    builder.create().show();
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    items.get(position).setValue(s.toString());
                 }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+                @Override
+                public void afterTextChanged(Editable s) { }
             });
         }
 

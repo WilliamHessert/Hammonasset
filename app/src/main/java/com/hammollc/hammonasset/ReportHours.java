@@ -454,7 +454,7 @@ public class ReportHours extends AppCompatActivity {
     private void handleOther() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ReportHours.this);
         builder.setTitle("Warning");
-        builder.setMessage("You are about to view non-standard pay classifications. Confirm with your foreman before selecting any of these");
+        builder.setMessage("You are about to view non-standard pay classifications. Confirm with your foreman before selecting any of these.");
 
         builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
             @Override

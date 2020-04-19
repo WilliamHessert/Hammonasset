@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hammollc.hammonasset.ImageActivity">
+
+    <ProgressBar
+        android:id="@+id/imageProgress"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerInParent="true"/>
+
+    <RelativeLayout
+        android:id="@+id/iView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/iBridgeNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:hint="Bridge Number"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:inputType="number"/>
+
+        <EditText
+            android:id="@+id/iName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:hint="Image Name"
+            android:layout_below="@id/iBridgeNumber"
+            android:layout_centerHorizontal="true"
+            android:inputType="text"/>
+
+        <Button
+            android:id="@+id/iUploadBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:text="Upload Image"
+            android:textColor="#fff"
+            android:layout_below="@id/iName"
+            android:layout_marginStart="20dp"
+            android:layout_margin="10dp"
+            android:layout_alignParentStart="true"/>
+
+        <Button
+            android:id="@+id/iSubmitBtn"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:text="Upload Image"
+            android:textColor="#fff"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:layout_below="@id/iUploadBtn"
+            android:layout_above="@id/iSubmitBtn"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iImage"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".75"
+                android:layout_margin="20dp" />
+
+            <EditText
+                android:id="@+id/iNotes"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".25"
+                android:background="@drawable/box"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:hint="Additional Notes"
+                android:inputType="text"
+                android:lines="3"
+                android:gravity="start|top"
+                android:layout_margin="20dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

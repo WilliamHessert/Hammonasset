@@ -59,6 +59,8 @@ public class CrewHistory extends AppCompatActivity {
     ArrayList<CrewMember> crewMembers;
     Context context = CrewHistory.this;
 
+    private ArrayList<ArrayList<String>> poNumbersToContract = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,8 +105,29 @@ public class CrewHistory extends AppCompatActivity {
             date = extras.getString("date", "");
             time = extras.getString("time", "");
 
-            loadViews();
+            poNumsToContract();
         }
+    }
+
+    private void poNumsToContract() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("poNumberToContract");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    ArrayList<String> list = new ArrayList<>();
+                    list.add(data.getKey());
+                    list.add(data.getValue(String.class));
+                    poNumbersToContract.add(list);
+                }
+
+                loadViews();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) { }
+        });
     }
 
     private void loadViews() {
@@ -449,9 +472,10 @@ public class CrewHistory extends AppCompatActivity {
     }
 
     private void downloadPayItems(Crew crew) {
+        String poNum = crew.getPoNumber();
         final ArrayList<PayItem> payItems = new ArrayList<>();
-        DatabaseReference pRef = db.getReference("Contracts").child("16PSX0176").child("poNums");
-        pRef.child(crew.getPoNumber()).child("reports").child(crew.getDate()).child(crew.getTime())
+        DatabaseReference pRef = db.getReference("Contracts").child(getContract(poNum)).child("poNums");
+        pRef.child(poNum).child("reports").child(crew.getDate()).child(crew.getTime())
                 .child(uid).child("payItems").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -808,5 +832,14 @@ public class CrewHistory extends AppCompatActivity {
             return  h+"75";
 
         return h+"00";
+    }
+
+    private String getContract(String poNumber) {
+        for(ArrayList<String> list: poNumbersToContract) {
+            if(list.get(0).equals(poNumber))
+                return list.get(1);
+        }
+
+        return "16PSX0176";
     }
 }

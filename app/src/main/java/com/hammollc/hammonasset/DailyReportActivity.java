@@ -50,6 +50,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -137,6 +138,9 @@ public class DailyReportActivity extends AppCompatActivity {
     ArrayAdapter<String> imageAdapter;
 
     String preKey;
+    Context context;
+
+    private ArrayList<ArrayList<String>> poNumbersToContract = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,10 +149,32 @@ public class DailyReportActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         finalImages = new ArrayList<>();
-
+        context = DailyReportActivity.this;
+        
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getDateAndTime();
+        poNumsToContract();
+    }
+
+    private void poNumsToContract() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("poNumberToContract");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    ArrayList<String> list = new ArrayList<>();
+                    list.add(data.getKey());
+                    list.add(data.getValue(String.class));
+                    poNumbersToContract.add(list);
+                }
+
+                getDateAndTime();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) { }
+        });
     }
 
     @Override
@@ -189,11 +215,11 @@ public class DailyReportActivity extends AppCompatActivity {
                     case "misc":
                         openFlaggerView();
                         break;
-                    case "imag":
-                        loadMiscView();
-                        break;
+//                    case "imag":
+//                        loadMiscView();
+//                        break;
                     case "erev":
-                        addImages();
+                        loadMiscView();
                         break;
                 }
 
@@ -204,7 +230,7 @@ public class DailyReportActivity extends AppCompatActivity {
     }
 
     private void confirmPageLeave() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Confirm");
         builder.setMessage("You're about to leave this report without saving. Are you sure about this?");
 
@@ -239,7 +265,7 @@ public class DailyReportActivity extends AppCompatActivity {
         preKey = date+time;
 
         if(date.equals("") || time.equals("")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("Error");
             builder.setMessage("Sorry, there was an error loading this daily report. Please contact your admin");
 
@@ -259,16 +285,18 @@ public class DailyReportActivity extends AppCompatActivity {
 
     private void downloadPoNumsNum() {
         String poNumber = getIntent().getExtras().getString("pNum", "");
+        final String contract = getContract(poNumber);
         db = FirebaseDatabase.getInstance();
+
         final DatabaseReference ref = db.getReference(
-                "Contracts").child("16PSX0176").child("poNums").child(poNumber);
-        Log.i("AHHH", poNumber);
+                "Contracts").child(contract).child("poNums").child(poNumber);
+
         ref.child("number").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String nString = dataSnapshot.getValue(String.class);
                 int num = Integer.parseInt(nString);
-                downloadPoNums(num, ref);
+                downloadPoNums(num, ref, contract);
             }
 
             @Override
@@ -276,7 +304,7 @@ public class DailyReportActivity extends AppCompatActivity {
         });
     }
 
-    private void downloadPoNums(final int num, DatabaseReference ref) {
+    private void downloadPoNums(final int num, DatabaseReference ref, final String contract) {
         initPayItems = new ArrayList<>();
         final ArrayList<PayItem> items = new ArrayList<>();
 
@@ -287,7 +315,7 @@ public class DailyReportActivity extends AppCompatActivity {
 
                 if(c != null) {
                     DatabaseReference iRef = FirebaseDatabase.getInstance()
-                            .getReference("Contracts").child("16PSX0176").child("pItems").child(c);
+                            .getReference("Contracts").child(contract).child("pItems").child(c);
 
                     iRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -325,7 +353,7 @@ public class DailyReportActivity extends AppCompatActivity {
     }
 
     private void loadSavedData() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String pNum = prefs.getString(preKey+"pNum", "");
         String insp = prefs.getString(preKey+"insp", "");
         String bNum = prefs.getString(preKey+"bNum", "");
@@ -482,7 +510,7 @@ public class DailyReportActivity extends AppCompatActivity {
         pNum.setText(poNumber);
 
         if(poNumber.equals("")) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("Error");
             builder.setMessage("Sorry, we couldn't " +
                     "load the P.O. Number for this report. Please contact your system admin");
@@ -500,14 +528,14 @@ public class DailyReportActivity extends AppCompatActivity {
         city.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(DailyReportActivity.this);
+                final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(false);
                 dialog.setContentView(R.layout.dialog_select_view);
 
                 ListView tList = dialog.findViewById(R.id.selectList);
                 ArrayAdapter<String> tAdapter = new ArrayAdapter<>(
-                        DailyReportActivity.this, android.R.layout.simple_list_item_1, towns);
+                        context, android.R.layout.simple_list_item_1, towns);
                 tList.setAdapter(tAdapter);
 
                 tList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -570,35 +598,66 @@ public class DailyReportActivity extends AppCompatActivity {
 
     private void loadPayItemView() {
         cLayout.setVisibility(View.GONE);
+        pBar.setVisibility(View.VISIBLE);
         final ArrayList<PayItem> items = initPayItems;
 
         layoutValue = "item";
         payItemHolder = items;
+        LinearLayout payItemView = findViewById(R.id.payItemLinearLayout);
 
-        cLayout = findViewById(R.id.payItemHolder);
-        cLayout.setVisibility(View.VISIBLE);
-        pTemp = new String[items.size()];
+        for(int j=0; j<items.size(); j++) {
+            PayItem payItem = items.get(j);
 
-        for(int i=0; i<pTemp.length; i++) {
-            pTemp[i] = "";
+            LinearLayout ll = new LinearLayout(context);
+            ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
+            ll.setOrientation(LinearLayout.HORIZONTAL);
+
+            EditText inputView = new EditText(context);
+            inputView.setHint(payItem.getUnit());
+            inputView.setTextSize(18);
+            inputView.setTextColor(Color.parseColor("#000000"));
+            inputView.setBackground(getResources().getDrawable(R.drawable.box, null));
+
+            TextView codeView = new TextView(context);
+            codeView.setText(payItem.getCode());
+            codeView.setTextSize(18);
+            codeView.setTextColor(Color.parseColor("#000000"));
+
+            TextView nameView = new TextView(context);
+            nameView.setText(payItem.getName());
+            nameView.setTextSize(18);
+            nameView.setTextColor(Color.parseColor("#000000"));
+
+            LinearLayout.LayoutParams inptParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.25f);
+            LinearLayout.LayoutParams codeParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.20f);
+            LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.55f);
+
+            inputView.setLayoutParams(inptParams);
+            codeView.setLayoutParams(codeParams);
+            nameView.setLayoutParams(nameParams);
+
+            ll.addView(inputView);
+            ll.addView(codeView);
+            ll.addView(nameView);
+
+            payItemView.addView(ll);
         }
-
-        final ListView pList = findViewById(R.id.payItemList);
-        payItemAdapter = new PayItemAdapter(
-                DailyReportActivity.this, items, false);
-        pList.setAdapter(payItemAdapter);
+//        final ListView pList = findViewById(R.id.payItemList);
+//        payItemAdapter = new PayItemAdapter(
+//                context, items, false);
+//        pList.setAdapter(payItemAdapter);
 
         if(firstTimeLoadingPayItems)
             loadSavedValues(items, payItemAdapter);
 
         firstTimeLoadingPayItems = false;
 
-        pList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startGathering(position, items, payItemAdapter);
-            }
-        });
+//        pList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                startGathering(position, items, payItemAdapter);
+//            }
+//        });
 
         cont.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -606,10 +665,19 @@ public class DailyReportActivity extends AppCompatActivity {
                 addPayItemValues(items);
             }
         });
+
+        cLayout = findViewById(R.id.payItemHolder);
+        cLayout.setVisibility(View.VISIBLE);
+        pBar.setVisibility(View.GONE);
+        pTemp = new String[items.size()];
+
+        for(int i=0; i<pTemp.length; i++) {
+            pTemp[i] = "";
+        }
     }
 
     private void loadSavedValues(ArrayList<PayItem> items, PayItemAdapter ad) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String poNum1 = prefs.getString(preKey+"pNum", "");
         String poNum2 = values.get(0);
 
@@ -675,11 +743,11 @@ public class DailyReportActivity extends AppCompatActivity {
         PayItem item = items.get(i);
         final TextView tv = findViewById(R.id.payItemText);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(item.getCode()+" "+item.getName());
         builder.setMessage("Please enter the "+item.getUnit()+"s for this pay item");
 
-        final EditText input = new EditText(DailyReportActivity.this);
+        final EditText input = new EditText(context);
         input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
         builder.setView(input);
 
@@ -734,32 +802,26 @@ public class DailyReportActivity extends AppCompatActivity {
             String s = vals[i];
 
             if(s.equals("")) {
-                invalid = true;
-                i = vals.length;
+                s = "0";
             }
-            else {
-                String p = items.get(i).getCode();
-                String v = p+"~"+s;
-                valuesToAdd.add(v);
-            }
+
+            String p = items.get(i).getCode();
+            String v = p+"~"+s;
+            valuesToAdd.add(v);
         }
 
-        if(invalid)
-            enterAllValuesError();
-        else {
-            pNum = valuesToAdd.size();
-            finalPayItems = new ArrayList<>();
+        pNum = valuesToAdd.size();
+        finalPayItems = new ArrayList<>();
 
-            for(int j=0; j<valuesToAdd.size(); j++) {
-                PayItem item = items.get(j);
-                String val = valuesToAdd.get(j);
-                item.setValue(val);
+        for(int j=0; j<valuesToAdd.size(); j++) {
+            PayItem item = items.get(j);
+            String val = valuesToAdd.get(j);
+            item.setValue(val);
 
-                finalPayItems.add(item);
-            }
-
-            loadAccomplishmentsView();
+            finalPayItems.add(item);
         }
+
+        loadAccomplishmentsView();
     }
 
     private void loadAccomplishmentsView() {
@@ -774,7 +836,7 @@ public class DailyReportActivity extends AppCompatActivity {
         ListView aList = findViewById(R.id.accList);
         final ArrayList<String> accs = new ArrayList<>();
         final ArrayAdapter<String> ad = new ArrayAdapter<>(
-                DailyReportActivity.this, android.R.layout.simple_list_item_1, accs);
+                context, android.R.layout.simple_list_item_1, accs);
 
         loadSavedAccomplishments(accs, ad);
 
@@ -783,7 +845,7 @@ public class DailyReportActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder builder =
-                        new AlertDialog.Builder(DailyReportActivity.this);
+                        new AlertDialog.Builder(context);
                 builder.setTitle("Confirm");
                 builder.setMessage("Are you sure you want to delete this accomplishment?");
 
@@ -811,7 +873,7 @@ public class DailyReportActivity extends AppCompatActivity {
         accBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(DailyReportActivity.this);
+                final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(false);
                 dialog.setContentView(R.layout.dialog_add_accomplishment);
@@ -856,7 +918,7 @@ public class DailyReportActivity extends AppCompatActivity {
     private void loadSavedAccomplishments(ArrayList<String> accs, ArrayAdapter<String> ad) {
         int i = -1;
         boolean moreItems = true;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         while(moreItems) {
             i++;
@@ -876,7 +938,7 @@ public class DailyReportActivity extends AppCompatActivity {
         aNum = accs.size();
 
         if(aNum == 0) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("No Accomplishments");
             builder.setMessage(
                     "Are you sure you want to proceed without adding any accomplishments?");
@@ -990,7 +1052,7 @@ public class DailyReportActivity extends AppCompatActivity {
 
             if (s.equals("") && m.equals("")) {
                 AlertDialog.Builder builder =
-                        new AlertDialog.Builder(DailyReportActivity.this);
+                        new AlertDialog.Builder(context);
                 builder.setTitle("No Notes");
                 builder.setMessage("Are you sure you want to proceed without adding any notes?");
 
@@ -1127,7 +1189,7 @@ public class DailyReportActivity extends AppCompatActivity {
         pItemsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(DailyReportActivity.this);
+                final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(false);
                 dialog.setContentView(R.layout.dialog_select_view);
@@ -1140,7 +1202,7 @@ public class DailyReportActivity extends AppCompatActivity {
 
                 ListView pList = dialog.findViewById(R.id.selectList);
                 PayItemAdapter pAdapter = new PayItemAdapter(
-                        DailyReportActivity.this, finalPayItems, true);
+                        context, finalPayItems, true);
                 pList.setAdapter(pAdapter);
 
                 Button closeBtn = dialog.findViewById(R.id.closeDialog);
@@ -1159,14 +1221,14 @@ public class DailyReportActivity extends AppCompatActivity {
         accBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(DailyReportActivity.this);
+                final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(false);
                 dialog.setContentView(R.layout.dialog_select_view);
 
                 ListView aList = dialog.findViewById(R.id.selectList);
                 ArrayAdapter<String> aAdapter = new ArrayAdapter<>(
-                        DailyReportActivity.this,
+                        context,
                         android.R.layout.simple_list_item_1,
                         finalAccomplishments);
 
@@ -1226,14 +1288,14 @@ public class DailyReportActivity extends AppCompatActivity {
                 pNamesBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final Dialog dialog = new Dialog(DailyReportActivity.this);
+                        final Dialog dialog = new Dialog(context);
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         dialog.setCancelable(false);
                         dialog.setContentView(R.layout.dialog_select_view);
 
                         ListView tList = dialog.findViewById(R.id.selectList);
                         ArrayAdapter<String> tAdapter = new ArrayAdapter<>(
-                                DailyReportActivity.this,
+                                context,
                                 android.R.layout.simple_list_item_1, finalNames);
 
                         tList.setAdapter(tAdapter);
@@ -1255,7 +1317,7 @@ public class DailyReportActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         String m = "No police officers on this job site";
                         Toast.makeText(
-                                DailyReportActivity.this, m, Toast.LENGTH_LONG).show();
+                                context, m, Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -1266,14 +1328,14 @@ public class DailyReportActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         try {
-                            final Dialog dialog = new Dialog(DailyReportActivity.this);
+                            final Dialog dialog = new Dialog(context);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                             dialog.setCancelable(false);
                             dialog.setContentView(R.layout.dialog_select_view);
 
                             ListView tList = dialog.findViewById(R.id.selectList);
                             ArrayAdapter<String> tAdapter = new ArrayAdapter<>(
-                                    DailyReportActivity.this,
+                                    context,
                                     android.R.layout.simple_list_item_1, finalTowns);
 
                             tList.setAdapter(tAdapter);
@@ -1287,7 +1349,7 @@ public class DailyReportActivity extends AppCompatActivity {
 
                             dialog.show();
                         } catch (Exception e) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
                             builder.setTitle("No Towns");
                             builder.setMessage("You have no selected any towns");
 
@@ -1309,7 +1371,7 @@ public class DailyReportActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         String m = "This is only for local police.";
                         Toast.makeText(
-                                DailyReportActivity.this, m, Toast.LENGTH_LONG).show();
+                                context, m, Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -1574,7 +1636,7 @@ public class DailyReportActivity extends AppCompatActivity {
 
         final ArrayList<String> sNames = new ArrayList<>();
         final ArrayAdapter<String> ad = new ArrayAdapter<>(
-                DailyReportActivity.this, android.R.layout.simple_list_item_1, sNames);
+                context, android.R.layout.simple_list_item_1, sNames);
         nameList.setAdapter(ad);
 
         for(int i=0; i<savedNames.size(); i++) {
@@ -1626,11 +1688,11 @@ public class DailyReportActivity extends AppCompatActivity {
         addName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Add Officer Last Name");
                 builder.setMessage("Please enter the last name of a police officer that was on site");
 
-                final EditText input = new EditText(DailyReportActivity.this);
+                final EditText input = new EditText(context);
                 input.setInputType(1);
                 builder.setView(input);
 
@@ -1655,7 +1717,7 @@ public class DailyReportActivity extends AppCompatActivity {
         nameList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Confirm");
                 builder.setMessage("Are you sure you want to delete this name?");
 
@@ -1761,7 +1823,7 @@ public class DailyReportActivity extends AppCompatActivity {
             if(sTime.equals("") || eTime.equals(""))
                 enterAllValuesError();
             else if(!pol.equals("none") && sNames.size() == 0) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Must Add Names");
                 builder.setMessage("If you had police on the job site, " +
                         "you must specify the last names of the officers. If you did not" +
@@ -1809,7 +1871,7 @@ public class DailyReportActivity extends AppCompatActivity {
 
         ListView townList = findViewById(R.id.policeTownList);
         final ArrayAdapter<String> ad = new ArrayAdapter<>(
-                DailyReportActivity.this, android.R.layout.simple_list_item_1, sTowns);
+                context, android.R.layout.simple_list_item_1, sTowns);
         townList.setAdapter(ad);
 
         for(int i=0; i<savedTowns.size(); i++) {
@@ -1831,14 +1893,14 @@ public class DailyReportActivity extends AppCompatActivity {
         addTown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(DailyReportActivity.this);
+                final Dialog dialog = new Dialog(context);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(false);
                 dialog.setContentView(R.layout.dialog_select_view);
 
                 ListView tList = dialog.findViewById(R.id.selectList);
                 ArrayAdapter<String> tAdapter = new ArrayAdapter<>(
-                        DailyReportActivity.this, android.R.layout.simple_list_item_1, towns);
+                        context, android.R.layout.simple_list_item_1, towns);
                 tList.setAdapter(tAdapter);
 
                 tList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -1867,7 +1929,7 @@ public class DailyReportActivity extends AppCompatActivity {
         townList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Confirm");
                 builder.setMessage("Are you sure you want to remove this town?");
 
@@ -1895,7 +1957,7 @@ public class DailyReportActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(sTowns.size() == 0) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setTitle("Error");
                     builder.setMessage("Please select at least one town before advancing");
 
@@ -1976,7 +2038,7 @@ public class DailyReportActivity extends AppCompatActivity {
         cLayout = findViewById(R.id.miscHolder);
         cLayout.setVisibility(View.VISIBLE);
 
-        RelativeLayout oLayout = findViewById(R.id.imageHolder);
+        RelativeLayout oLayout = findViewById(R.id.reviewHolder);
         oLayout.setVisibility(View.GONE);
 
         String nText = "Continue >";
@@ -2013,351 +2075,351 @@ public class DailyReportActivity extends AppCompatActivity {
             values.add(peTime);
             values.add(vsText);
 
-            addImages();
+            openReview(true);
         }
     }
 
-    private void addImages() {
-        layoutValue = "imag";
-        cLayout.setVisibility(View.GONE);
-        cLayout = findViewById(R.id.imageHolder);
-        cLayout.setVisibility(View.VISIBLE);
+//    private void addImages() {
+//        layoutValue = "imag";
+//        cLayout.setVisibility(View.GONE);
+//        cLayout = findViewById(R.id.imageHolder);
+//        cLayout.setVisibility(View.VISIBLE);
+//
+//        RelativeLayout oLayout = findViewById(R.id.sigReviewHolder);
+//        oLayout.setVisibility(View.GONE);
+//        cont.setText("Continue >");
+//
+//        cImages = finalImages;
+//        fileNames = new ArrayList<>();
+//
+//        for(int i=0; i<cImages.size(); i++) {
+//            fileNames.add(cImages.get(i).getName());
+//        }
+//
+//        ListView imageList = findViewById(R.id.imageList);
+//        imageAdapter = new ArrayAdapter<>(
+//                context, android.R.layout.simple_list_item_1, fileNames);
+//        imageList.setAdapter(imageAdapter);
+//
+//        Button add = findViewById(R.id.imageBtn);
+//        add.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//                builder.setTitle("Select");
+//                builder.setMessage("How would you like to add this image?");
+//
+//                builder.setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        cont.setVisibility(View.GONE);
+//                        findViewById(R.id.saveBtn).setVisibility(View.GONE);
+//                        findViewById(R.id.imageHolder).setVisibility(View.GONE);
+//                        pBar.setVisibility(View.VISIBLE);
+//
+//                        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+//                                != PackageManager.PERMISSION_GRANTED) {
+//                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+//                                    STORAGE_REQUEST);
+//                        }
+//                        else {
+//                            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                            photoPickerIntent.setType("image/*");
+//                            startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
+//                        }
+//
+//                    }
+//                });
+//
+//                builder.setNeutralButton("Camera", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        if (checkSelfPermission(Manifest.permission.CAMERA)
+//                                != PackageManager.PERMISSION_GRANTED) {
+//                            requestPermissions(new String[]{Manifest.permission.CAMERA},
+//                                    CAMERA_REQUEST);
+//                        }
+//                        else {
+//                            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//                            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+//                        }
+//                    }
+//                });
+//
+//                builder.create().show();
+//            }
+//        });
+//
+//        imageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+//                ReportImage sImage = cImages.get(position);
+//                String name = sImage.getName();
+//                String desc = sImage.getDesc();
+//
+//                String code = sImage.getFile();
+//                byte[] decodedString = Base64.decode(code, Base64.DEFAULT);
+//                final Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//
+//                final Dialog dialog = new Dialog(context);
+//                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                dialog.setCancelable(false);
+//                dialog.setContentView(R.layout.dialog_image);
+//
+//                EditText eName = dialog.findViewById(R.id.imageName);
+//                EditText eDesc = dialog.findViewById(R.id.imageDesc);
+//
+//                eName.setText(name);
+//                eDesc.setText(desc);
+//
+//                eName.setFocusable(false);
+//                eDesc.setFocusable(false);
+//
+//                ImageView imageView = dialog.findViewById(R.id.viewCapturedImage);
+//                imageView.setImageBitmap(bitmap);
+//
+//                Button add = dialog.findViewById(R.id.addImageBtn);
+//                Button cancel = dialog.findViewById(R.id.cancelImageBtn);
+//
+//                add.setText("Okay");
+//                cancel.setText("Delete");
+//                cancel.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+//
+//                add.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//                cancel.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//                        builder.setTitle("Confirm");
+//                        builder.setMessage("Are you sure you want to delete this image?");
+//
+//                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface iDialog, int which) {
+//                                fileNames.remove(position);
+//                                cImages.remove(position);
+//                                imageAdapter.notifyDataSetChanged();
+//
+//                                iDialog.dismiss();
+//                                dialog.dismiss();
+//                            }
+//                        });
+//
+//                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface iDialog, int which) {
+//                                iDialog.dismiss();
+//                                dialog.dismiss();
+//                            }
+//                        });
+//
+//                        builder.create().show();
+//                    }
+//                });
+//
+//                dialog.show();
+//            }
+//        });
+//
+//        cont.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                finalImages = cImages;
+//                cImages = new ArrayList<>();
+//                openReview(true);
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+//            } else {
+//                Toast.makeText(this, "Camera Permission Denied", Toast.LENGTH_LONG).show();
+//            }
+//        }
+//        else if(requestCode == WRITE_REQUEST_CODE) {
+//            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+//                createPDF();
+//            }
+//            else{
+//                Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show();
+//                finishAndClose();
+//            }
+//        }
+//        else {
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+//                photoPickerIntent.setType("image/*");
+//                startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
+//            } else {
+//                cont.setVisibility(View.VISIBLE);
+//                findViewById(R.id.saveBtn).setVisibility(View.VISIBLE);
+//                findViewById(R.id.imageHolder).setVisibility(View.VISIBLE);
+//                pBar.setVisibility(View.GONE);
+//                Toast.makeText(this, "Storage Permission Denied", Toast.LENGTH_LONG).show();
+//            }
+//        }
+//    }
 
-        RelativeLayout oLayout = findViewById(R.id.sigReviewHolder);
-        oLayout.setVisibility(View.GONE);
-        cont.setText("Continue >");
 
-        cImages = finalImages;
-        fileNames = new ArrayList<>();
-
-        for(int i=0; i<cImages.size(); i++) {
-            fileNames.add(cImages.get(i).getName());
-        }
-
-        ListView imageList = findViewById(R.id.imageList);
-        imageAdapter = new ArrayAdapter<>(
-                DailyReportActivity.this, android.R.layout.simple_list_item_1, fileNames);
-        imageList.setAdapter(imageAdapter);
-
-        Button add = findViewById(R.id.imageBtn);
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
-                builder.setTitle("Select");
-                builder.setMessage("How would you like to add this image?");
-
-                builder.setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        cont.setVisibility(View.GONE);
-                        findViewById(R.id.saveBtn).setVisibility(View.GONE);
-                        findViewById(R.id.imageHolder).setVisibility(View.GONE);
-                        pBar.setVisibility(View.VISIBLE);
-
-                        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                    STORAGE_REQUEST);
-                        }
-                        else {
-                            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                            photoPickerIntent.setType("image/*");
-                            startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
-                        }
-
-                    }
-                });
-
-                builder.setNeutralButton("Camera", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (checkSelfPermission(Manifest.permission.CAMERA)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                    CAMERA_REQUEST);
-                        }
-                        else {
-                            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                        }
-                    }
-                });
-
-                builder.create().show();
-            }
-        });
-
-        imageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                ReportImage sImage = cImages.get(position);
-                String name = sImage.getName();
-                String desc = sImage.getDesc();
-
-                String code = sImage.getFile();
-                byte[] decodedString = Base64.decode(code, Base64.DEFAULT);
-                final Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                final Dialog dialog = new Dialog(DailyReportActivity.this);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setCancelable(false);
-                dialog.setContentView(R.layout.dialog_image);
-
-                EditText eName = dialog.findViewById(R.id.imageName);
-                EditText eDesc = dialog.findViewById(R.id.imageDesc);
-
-                eName.setText(name);
-                eDesc.setText(desc);
-
-                eName.setFocusable(false);
-                eDesc.setFocusable(false);
-
-                ImageView imageView = dialog.findViewById(R.id.viewCapturedImage);
-                imageView.setImageBitmap(bitmap);
-
-                Button add = dialog.findViewById(R.id.addImageBtn);
-                Button cancel = dialog.findViewById(R.id.cancelImageBtn);
-
-                add.setText("Okay");
-                cancel.setText("Delete");
-                cancel.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-
-                add.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
-                        builder.setTitle("Confirm");
-                        builder.setMessage("Are you sure you want to delete this image?");
-
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface iDialog, int which) {
-                                fileNames.remove(position);
-                                cImages.remove(position);
-                                imageAdapter.notifyDataSetChanged();
-
-                                iDialog.dismiss();
-                                dialog.dismiss();
-                            }
-                        });
-
-                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface iDialog, int which) {
-                                iDialog.dismiss();
-                                dialog.dismiss();
-                            }
-                        });
-
-                        builder.create().show();
-                    }
-                });
-
-                dialog.show();
-            }
-        });
-
-        cont.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finalImages = cImages;
-                cImages = new ArrayList<>();
-                openReview(true);
-            }
-        });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            } else {
-                Toast.makeText(this, "Camera Permission Denied", Toast.LENGTH_LONG).show();
-            }
-        }
-        else if(requestCode == WRITE_REQUEST_CODE) {
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                createPDF();
-            }
-            else{
-                Toast.makeText(DailyReportActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
-                finishAndClose();
-            }
-        }
-        else {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
-            } else {
-                cont.setVisibility(View.VISIBLE);
-                findViewById(R.id.saveBtn).setVisibility(View.VISIBLE);
-                findViewById(R.id.imageHolder).setVisibility(View.VISIBLE);
-                pBar.setVisibility(View.GONE);
-                Toast.makeText(this, "Storage Permission Denied", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-
-    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
-        cont.setVisibility(View.VISIBLE);
-        findViewById(R.id.saveBtn).setVisibility(View.VISIBLE);
-        findViewById(R.id.imageHolder).setVisibility(View.VISIBLE);
-        pBar.setVisibility(View.GONE);
-
-        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-
-            byte[] byteArray = byteArrayOutputStream .toByteArray();
-            final String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-            final Dialog dialog = new Dialog(DailyReportActivity.this);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCancelable(false);
-            dialog.setContentView(R.layout.dialog_image);
-
-            ImageView imageView = dialog.findViewById(R.id.viewCapturedImage);
-            imageView.setImageBitmap(bitmap);
-
-            Button add = dialog.findViewById(R.id.addImageBtn);
-            Button cancel = dialog.findViewById(R.id.cancelImageBtn);
-
-            add.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EditText eName = dialog.findViewById(R.id.imageName);
-                    EditText eDesc = dialog.findViewById(R.id.imageDesc);
-
-                    String name = eName.getText().toString();
-                    String desc = eDesc.getText().toString();
-
-                    if(name.equals("")) {
-                        AlertDialog.Builder builder =
-                                new AlertDialog.Builder(DailyReportActivity.this);
-                        builder.setTitle("Error");
-                        builder.setMessage("Please enter image name before proceeding.");
-
-                        builder.setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface iDialog, int which) {
-                                iDialog.dismiss();
-                            }
-                        });
-
-                        builder.create().show();
-                    }
-
-                    ReportImage image = new ReportImage(encoded);
-                    image.setName(name);
-                    image.setDesc(desc);
-
-                    cImages.add(image);
-                    fileNames.add(name);
-                    imageAdapter.notifyDataSetChanged();
-
-                    dialog.dismiss();
-                }
-            });
-
-            cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-
-            dialog.show();
-        }
-        else if (requestCode == RESULT_LOAD_IMG && resultCode == Activity.RESULT_OK) {
-            try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-
-                byte[] byteArray = byteArrayOutputStream.toByteArray();
-                final String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                final Dialog dialog = new Dialog(DailyReportActivity.this);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setCancelable(false);
-                dialog.setContentView(R.layout.dialog_image);
-
-                ImageView imageView = dialog.findViewById(R.id.viewCapturedImage);
-                imageView.setImageBitmap(bitmap);
-
-                Button add = dialog.findViewById(R.id.addImageBtn);
-                Button cancel = dialog.findViewById(R.id.cancelImageBtn);
-
-                add.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        EditText eName = dialog.findViewById(R.id.imageName);
-                        EditText eDesc = dialog.findViewById(R.id.imageDesc);
-
-                        String name = eName.getText().toString();
-                        String desc = eDesc.getText().toString();
-
-                        if (name.equals("")) {
-                            AlertDialog.Builder builder =
-                                    new AlertDialog.Builder(DailyReportActivity.this);
-                            builder.setTitle("Error");
-                            builder.setMessage("Please enter image name before proceeding.");
-
-                            builder.setPositiveButton("OK",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface iDialog, int which) {
-                                            iDialog.dismiss();
-                                        }
-                                    });
-
-                            builder.create().show();
-                        }
-
-                        ReportImage image = new ReportImage(encoded);
-                        image.setName(name);
-                        image.setDesc(desc);
-
-                        cImages.add(image);
-                        fileNames.add(name);
-                        imageAdapter.notifyDataSetChanged();
-
-                        dialog.dismiss();
-                    }
-                });
-
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show();
-            } catch (Exception e) {
-                Toast.makeText(DailyReportActivity.this,
-                        "Error loading iamge...", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
+//    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
+//        cont.setVisibility(View.VISIBLE);
+//        findViewById(R.id.saveBtn).setVisibility(View.VISIBLE);
+//        findViewById(R.id.imageHolder).setVisibility(View.VISIBLE);
+//        pBar.setVisibility(View.GONE);
+//
+//        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+//            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+//
+//            byte[] byteArray = byteArrayOutputStream .toByteArray();
+//            final String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+//
+//            final Dialog dialog = new Dialog(context);
+//            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            dialog.setCancelable(false);
+//            dialog.setContentView(R.layout.dialog_image);
+//
+//            ImageView imageView = dialog.findViewById(R.id.viewCapturedImage);
+//            imageView.setImageBitmap(bitmap);
+//
+//            Button add = dialog.findViewById(R.id.addImageBtn);
+//            Button cancel = dialog.findViewById(R.id.cancelImageBtn);
+//
+//            add.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    EditText eName = dialog.findViewById(R.id.imageName);
+//                    EditText eDesc = dialog.findViewById(R.id.imageDesc);
+//
+//                    String name = eName.getText().toString();
+//                    String desc = eDesc.getText().toString();
+//
+//                    if(name.equals("")) {
+//                        AlertDialog.Builder builder =
+//                                new AlertDialog.Builder(context);
+//                        builder.setTitle("Error");
+//                        builder.setMessage("Please enter image name before proceeding.");
+//
+//                        builder.setPositiveButton("OK",
+//                                new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface iDialog, int which) {
+//                                iDialog.dismiss();
+//                            }
+//                        });
+//
+//                        builder.create().show();
+//                    }
+//
+//                    ReportImage image = new ReportImage(encoded);
+//                    image.setName(name);
+//                    image.setDesc(desc);
+//
+//                    cImages.add(image);
+//                    fileNames.add(name);
+//                    imageAdapter.notifyDataSetChanged();
+//
+//                    dialog.dismiss();
+//                }
+//            });
+//
+//            cancel.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    dialog.dismiss();
+//                }
+//            });
+//
+//            dialog.show();
+//        }
+//        else if (requestCode == RESULT_LOAD_IMG && resultCode == Activity.RESULT_OK) {
+//            try {
+//                final Uri imageUri = data.getData();
+//                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+//                final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+//
+//                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+//
+//                byte[] byteArray = byteArrayOutputStream.toByteArray();
+//                final String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+//
+//                final Dialog dialog = new Dialog(context);
+//                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                dialog.setCancelable(false);
+//                dialog.setContentView(R.layout.dialog_image);
+//
+//                ImageView imageView = dialog.findViewById(R.id.viewCapturedImage);
+//                imageView.setImageBitmap(bitmap);
+//
+//                Button add = dialog.findViewById(R.id.addImageBtn);
+//                Button cancel = dialog.findViewById(R.id.cancelImageBtn);
+//
+//                add.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        EditText eName = dialog.findViewById(R.id.imageName);
+//                        EditText eDesc = dialog.findViewById(R.id.imageDesc);
+//
+//                        String name = eName.getText().toString();
+//                        String desc = eDesc.getText().toString();
+//
+//                        if (name.equals("")) {
+//                            AlertDialog.Builder builder =
+//                                    new AlertDialog.Builder(context);
+//                            builder.setTitle("Error");
+//                            builder.setMessage("Please enter image name before proceeding.");
+//
+//                            builder.setPositiveButton("OK",
+//                                    new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface iDialog, int which) {
+//                                            iDialog.dismiss();
+//                                        }
+//                                    });
+//
+//                            builder.create().show();
+//                        }
+//
+//                        ReportImage image = new ReportImage(encoded);
+//                        image.setName(name);
+//                        image.setDesc(desc);
+//
+//                        cImages.add(image);
+//                        fileNames.add(name);
+//                        imageAdapter.notifyDataSetChanged();
+//
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//                cancel.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//                dialog.show();
+//            } catch (Exception e) {
+//                Toast.makeText(context,
+//                        "Error loading iamge...", Toast.LENGTH_LONG).show();
+//            }
+//        }
+//    }
 
     private void uploadData() {
         cLayout.setVisibility(View.GONE);
@@ -2372,7 +2434,7 @@ public class DailyReportActivity extends AppCompatActivity {
                 "fName", "") +" " +extras.getString("lName", "");
 
         DatabaseReference fRef = FirebaseDatabase.getInstance().getReference("Contracts");
-        final DatabaseReference ref = fRef.child("16PSX0176")
+        final DatabaseReference ref = fRef.child(getContract(pNum))
                 .child("poNums").child(pNum).child("reports").child(date).child(time).child(uid);
         ref.child("foremanName").setValue(name).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -2665,7 +2727,7 @@ public class DailyReportActivity extends AppCompatActivity {
     }
 
     private void updateAlerts(String uid) {
-        Toast.makeText(DailyReportActivity.this, uid, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, uid, Toast.LENGTH_LONG).show();
         FirebaseDatabase.getInstance().getReference("alerts").child(uid).child("dailyReport")
                 .child(date).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -2702,7 +2764,7 @@ public class DailyReportActivity extends AppCompatActivity {
 
             PdfDocument document = new PdfDocument();
             Bitmap background = BitmapFactory.decodeResource(
-                    DailyReportActivity.this.getResources(), R.drawable.daily_report);
+                    context.getResources(), R.drawable.daily_report);
 
             PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(
                     background.getWidth(), background.getHeight(), 1).create();
@@ -2942,7 +3004,7 @@ public class DailyReportActivity extends AppCompatActivity {
                 requestPermissions(permissions, WRITE_REQUEST_CODE);
             }
             else {
-                Toast.makeText(DailyReportActivity.this,
+                Toast.makeText(context,
                         "Could not produce PDF", Toast.LENGTH_LONG).show();
                 Log.i("error", e.getLocalizedMessage());
             }
@@ -2992,13 +3054,13 @@ public class DailyReportActivity extends AppCompatActivity {
     }
 
     private void finishAndClose() {
-        Toast.makeText(DailyReportActivity.this, "Successfully Uploaded!", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Successfully Uploaded!", Toast.LENGTH_LONG).show();
         clearAllValues();
         DailyReportActivity.this.finish();
     }
 
     private void confirmExit() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Confirm");
         builder.setMessage("Are you sure you wish to save your progress and exit? Note this " +
                 "will not save your current page, it will save all previous pages. If you" +
@@ -3023,7 +3085,7 @@ public class DailyReportActivity extends AppCompatActivity {
         builder.create().show();
     }
     private void saveValuesAndExit() {
-        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this).edit();
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         clearSavedPayItems();
         clearSavedAccomplishments();
 
@@ -3177,7 +3239,7 @@ public class DailyReportActivity extends AppCompatActivity {
         clearPoliceTowns();
         clearImages();
 
-        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this).edit();
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 
         prefEditor.putString(preKey+"pNum", "");
         prefEditor.putString(preKey+"insp", "");
@@ -3209,7 +3271,7 @@ public class DailyReportActivity extends AppCompatActivity {
     private void clearSavedPayItems() {
         int i = -1;
         boolean moreItems = true;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         while(moreItems) {
             i++;
@@ -3234,7 +3296,7 @@ public class DailyReportActivity extends AppCompatActivity {
     private void clearSavedAccomplishments() {
         int i = -1;
         boolean moreItems = true;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         while(moreItems) {
             i++;
@@ -3259,7 +3321,7 @@ public class DailyReportActivity extends AppCompatActivity {
     private void clearPoliceNames() {
         int i = -1;
         boolean moreItems = true;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         while(moreItems) {
             i++;
@@ -3284,7 +3346,7 @@ public class DailyReportActivity extends AppCompatActivity {
     private void clearPoliceTowns() {
         int i = -1;
         boolean moreItems = true;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         while(moreItems) {
             i++;
@@ -3309,7 +3371,7 @@ public class DailyReportActivity extends AppCompatActivity {
     private void clearImages() {
         int i = -1;
         boolean moreItems = true;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(DailyReportActivity.this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         while(moreItems) {
             i++;
@@ -3339,7 +3401,7 @@ public class DailyReportActivity extends AppCompatActivity {
     }
 
     private void enterAllValuesError() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Error");
         builder.setMessage("Please enter all values before continuing.");
 
@@ -3354,7 +3416,7 @@ public class DailyReportActivity extends AppCompatActivity {
     }
 
     private void selectOneError(String m) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(DailyReportActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Error");
         builder.setMessage("Please select "+m+"  before continuing.");
 
@@ -3446,5 +3508,14 @@ public class DailyReportActivity extends AppCompatActivity {
 
         d = c.getTime();
         return sdf.format(d);
+    }
+
+    private String getContract(String poNumber) {
+        for(ArrayList<String> list: poNumbersToContract) {
+            if(list.get(0).equals(poNumber))
+                return list.get(1);
+        }
+
+        return "16PSX0176";
     }
 }

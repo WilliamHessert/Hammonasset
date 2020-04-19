@@ -940,6 +940,9 @@ public class ForemanActivity extends AppCompatActivity
             case R.id.nav_receipts:
                 openReceiptActivity();
                 break;
+            case R.id.nav_images:
+                openImageActivty();
+                break;
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -1027,6 +1030,14 @@ public class ForemanActivity extends AppCompatActivity
 
     private void openReceiptActivity() {
         Intent i = new Intent(ForemanActivity.this, ReceiptActivity.class);
+        i.putExtra("uid", uid);
+        i.putExtra("fName", fName);
+        i.putExtra("lName", lName);
+        ForemanActivity.this.startActivity(i);
+    }
+
+    private void openImageActivty() {
+        Intent i = new Intent(ForemanActivity.this, ImageActivity.class);
         i.putExtra("uid", uid);
         i.putExtra("fName", fName);
         i.putExtra("lName", lName);

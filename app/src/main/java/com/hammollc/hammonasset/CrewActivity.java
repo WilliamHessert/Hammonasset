@@ -61,7 +61,7 @@ public class CrewActivity extends AppCompatActivity {
     boolean day;
 
     ArrayList<String> eData;
-    final ArrayList<Integer> eIndeces = new ArrayList();
+    final ArrayList<Integer> eIndeces = new ArrayList<>();
     ArrayList<String> eNames;
 
     int eNum;
@@ -75,6 +75,8 @@ public class CrewActivity extends AppCompatActivity {
     String uid;
 
     Context context = CrewActivity.this;
+
+    private ArrayList<ArrayList<String>> poNumbersToContract = new ArrayList<>();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +110,7 @@ public class CrewActivity extends AppCompatActivity {
                    poNums.add(poNumData.getValue(String.class));
                 }
 
-                openInitView(poNums);
+                poNumsToContract(poNums);
             }
 
             @Override
@@ -126,6 +128,27 @@ public class CrewActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void poNumsToContract(final ArrayList<String> poNums) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("poNumberToContract");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    ArrayList<String> list = new ArrayList<>();
+                    list.add(data.getKey());
+                    list.add(data.getValue(String.class));
+                    poNumbersToContract.add(list);
+                }
+
+                openInitView(poNums);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) { }
+        });
     }
 
     private void openInitView(final ArrayList<String> poNums) {
@@ -451,24 +474,6 @@ public class CrewActivity extends AppCompatActivity {
             }
         });
 
-        (findViewById(R.id.addDefCrewBtn)).setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Coming Soon");
-                builder.setMessage("This functionality is currently under maintenance. However," +
-                        " if you save a default crew, it will be saved to your account and you" +
-                        " will be able to view it once this functionality is fixed.");
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                builder.create().show();
-            }
-        });
         lView.setOnItemClickListener(new OnItemClickListener() {
 
             /* renamed from: com.hammollc.hammonasset.CrewActivity$18$2 */
@@ -630,7 +635,8 @@ public class CrewActivity extends AppCompatActivity {
         if(day)
             dString = "day";
 
-        addCrewmanToPoNumber(0, FirebaseDatabase.getInstance().getReference("Contracts").child("16PSX0176").child("poNums").child(this.pField.getText().toString()).child("crews").child(mDate).child(nDate).child(dString).child(uid), mDate, nDate);
+        String poNum = this.pField.getText().toString();
+        addCrewmanToPoNumber(0, FirebaseDatabase.getInstance().getReference("Contracts").child(getContract(poNum)).child("poNums").child(poNum).child("crews").child(mDate).child(nDate).child(dString).child(uid), mDate, nDate);
     }
 
     private void addCrewmanToPoNumber(int i, DatabaseReference ref, String mDate, String nDate) {
@@ -689,7 +695,7 @@ public class CrewActivity extends AppCompatActivity {
 
     private void updateEmployeeAlerts(int i, final DatabaseReference ref, final String date) {
         if(i == crewIds.size())
-            createDefaultCrewDialog(date);
+            close();
         else {
             final int j = i+1;
 
@@ -707,91 +713,9 @@ public class CrewActivity extends AppCompatActivity {
         }
     }
 
-    private void createDefaultCrewDialog(final String nDate) {
-        this.count++;
-        if (this.count == this.crewIds.size()) {
-            Builder builder = new Builder(this);
-            builder.setTitle("Save Crew");
-            builder.setMessage("Would you like to save this crew as a default crew? This means you will be able to select this crew with a simple button click rather than having to reselect the crew person by person.");
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    getDefaultCrewName(nDate);
-                }
-            });
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    finish();
-                }
-            });
-            builder.create().show();
-        }
-    }
-
-    private void getDefaultCrewName(final String nDate) {
-        Builder builder = new Builder(this);
-        builder.setTitle("Name Default Crew");
-        builder.setMessage("Please enter a name for this crew (so you can use it later).");
-        final EditText input = new EditText(this);
-        input.setInputType(1);
-        builder.setView(input);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                createDefaultCrew(input.getText().toString(), nDate);
-                dialog.dismiss();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                input.setInputType(0);
-                dialog.dismiss();
-            }
-        });
-        builder.create().show();
-    }
-
-    private void createDefaultCrew(final String nam, String nDate) {
-        this.count = 0;
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(this.uid).child("defaultCrews").child(nDate);
-        for (int i = 0; i < this.crewIds.size(); i++) {
-            String id = (String) this.crewIds.get(i);
-            if (!id.equals(this.uid)) {
-                ref.child(i + "").setValue(id).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            checkCanClose(ref, nam);
-                        } else {
-                            displayError("Error Saving Default Crew");
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-    private void checkCanClose(DatabaseReference ref, String nam) {
-        this.count++;
-        if (this.count == this.crewIds.size() - 1) {
-            this.cNum++;
-            ref.child("name").setValue(nam).addOnCompleteListener(new OnCompleteListener<Void>() {
-
-                /* renamed from: com.hammollc.hammonasset.CrewActivity$29$1 */
-                class C05151 implements OnCompleteListener<Void> {
-                    C05151() {
-                    }
-
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
-                        finish();
-                    }
-                }
-
-                public void onComplete(@NonNull Task<Void> task) {
-                    FirebaseDatabase.getInstance().getReference("Users").child(uid).child("defaultCrews").child("number").setValue(Integer.valueOf(cNum)).addOnCompleteListener(new C05151());
-                }
-            });
-        }
+    private void close() {
+        Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
+        finish();
     }
 
     private String reformatDate() {
@@ -845,5 +769,14 @@ public class CrewActivity extends AppCompatActivity {
             }
         });
         builder.create().show();
+    }
+
+    private String getContract(String poNumber) {
+        for(ArrayList<String> list: poNumbersToContract) {
+            if(list.get(0).equals(poNumber))
+                return list.get(1);
+        }
+
+        return "16PSX0176";
     }
 }
